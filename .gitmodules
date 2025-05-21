@@ -1,0 +1,4 @@
+[submodule "hna"]
+	path = hna
+	url = git@github.com:ista-vamos/hna.git
+	branch = shnl-dev
