@@ -24,12 +24,12 @@ python3 -OO $HNA/hnl.py "$FORMULA_STRED" \
   --alphabet=$ALPHABET --overwrite-file $DIR/files/read_csv_event.h -DMEASURE_CPUTIME=OFF -DCACHE_ATOMS_RESULTS=OFF --logic shl\
   --reduction reflexive,symmetric
 
-python3 -OO $HNA/hnl.py "$FORMULA_EQ" \
-  --out-dir shl-eq --data="$CSV_HEADER" \
-  --alphabet=$ALPHABET --overwrite-file $DIR/files/read_csv_event.h -DMEASURE_CPUTIME=OFF -DCACHE_ATOMS_RESULTS=OFF --logic shl\
-  --reduction reflexive,symmetric
-
-python3 -OO $HNA/hnl.py "$FORMULA_STRED_EQ" \
-  --out-dir shl-eq-stred --data="$CSV_HEADER" \
-  --alphabet=$ALPHABET --overwrite-file $DIR/files/read_csv_event.h -DMEASURE_CPUTIME=OFF -DCACHE_ATOMS_RESULTS=OFF --logic shl\
-  --reduction reflexive,symmetric
+# python3 -OO $HNA/hnl.py "$FORMULA_EQ" \
+#   --out-dir shl-eq --data="$CSV_HEADER" \
+#   --alphabet=$ALPHABET --overwrite-file $DIR/files/read_csv_event.h -DMEASURE_CPUTIME=OFF -DCACHE_ATOMS_RESULTS=OFF --logic shl\
+#   --reduction reflexive,symmetric
+# 
+# python3 -OO $HNA/hnl.py "$FORMULA_STRED_EQ" \
+#   --out-dir shl-eq-stred --data="$CSV_HEADER" \
+#   --alphabet=$ALPHABET --overwrite-file $DIR/files/read_csv_event.h -DMEASURE_CPUTIME=OFF -DCACHE_ATOMS_RESULTS=OFF --logic shl\
+#   --reduction reflexive,symmetric

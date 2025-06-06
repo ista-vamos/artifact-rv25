@@ -3,7 +3,7 @@
 set -e
 
 DIR=$(dirname $0)
-HNA=$DIR/../hna
+HNA=$DIR/../../hna-ifm24
 
 FORMULA='forall t1, t2: (!(in(t1) <= in(t2) && in(t2) <= in(t1)) || (out(t1) <= out(t2) && out(t2) <= out(t1)))'
 FORMULA_STRED='forall t1, t2: (!([in(t1)] <= [in(t2)] && [in(t2)] <= [in(t1)]) || ([out(t1)] <= [out(t2)] && [out(t2)] <= [out(t1)]))'
