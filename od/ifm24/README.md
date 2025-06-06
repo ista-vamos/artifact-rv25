@@ -1,3 +1,6 @@
+This folder contains scripts to reproduce the experiments with eHL from iFM'24
+and adds new experiments with sHL that compare to the results of eHL.
+
 ```
 # Don't forget
 source ../../venv/bin/activate

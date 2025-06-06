@@ -3,6 +3,6 @@
 	url = git@github.com:ista-vamos/hna.git
 	branch = shnl-dev
 [submodule "ifm24/hna"]
-	path = ifm24/hna
+	path = hna-ifm24
 	url = https://github.com/ista-vamos/hna.git
 	branch = ifm24
