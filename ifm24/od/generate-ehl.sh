@@ -18,7 +18,7 @@ if [ ! -z "$1" ]; then
     --out-dir ehl-$ALPHABET --csv-header="$CSV_HEADER" \
     --alphabet=$ALPHABET --overwrite-file $DIR/files/read_csv_event.h -DMEASURE_CPUTIME=OFF -DCACHE_ATOMS_RESULTS=OFF --reduction reflexive,symmetric
   python3 -OO $HNA/hnl.py "$FORMULA_STRED" \
-    --out-dir ehl-$ALPHABET-stred --csv-header="$CSV_HEADER" \
+    --out-dir ehl-stred-$ALPHABET --csv-header="$CSV_HEADER" \
     --alphabet=$ALPHABET --overwrite-file $DIR/files/read_csv_event.h -DMEASURE_CPUTIME=OFF -DCACHE_ATOMS_RESULTS=OFF --reduction reflexive,symmetric
   exit 0
 fi
@@ -31,6 +31,6 @@ done
 
 for ALPHABET in 1b 2b 4b; do
   python3 -OO $HNA/hnl.py "$FORMULA_STRED" \
-    --out-dir ehl-$ALPHABET-stred --csv-header="$CSV_HEADER" \
+    --out-dir ehl-stred-$ALPHABET --csv-header="$CSV_HEADER" \
     --alphabet=$ALPHABET --overwrite-file $DIR/files/read_csv_event.h -DMEASURE_CPUTIME=OFF -DCACHE_ATOMS_RESULTS=OFF --reduction reflexive,symmetric
 done

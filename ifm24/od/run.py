@@ -28,7 +28,7 @@ def run_one(arg):
     traces_dir = mkdtemp(prefix="/tmp/")
 
     # -- GENERATE TRACES
-    #print(f"  \033[37;1m.. [{datetime.datetime.now().time()}] running # traces = {traces_num}, len = {trace_len}, bits = {bits}\033[0m", file=stderr)
+    # print(f"  \033[37;1m.. [{datetime.datetime.now().time()}] running # traces = {traces_num}, len = {trace_len}, bits = {bits}\033[0m", file=stderr)
     #stderr.flush()
 
     trnum = 1 if args.one_trace else traces_num
@@ -54,10 +54,18 @@ def run_one(arg):
         results.append(run_mpt(arg, traces_dir, files))
     if "rvhyper" in monitors:
         results.append(run_rvhyper(arg, traces_dir, files))
-    if "hnl" in monitors:
-        results.append(run_hnl(arg, traces_dir, files))
-    if "hnl-stred" in monitors:
-        results.append(run_hnl(arg, traces_dir, files, stred=True))
+    if "ehl" in monitors:
+        results.append(run_hnl(arg, traces_dir, files, "ehl"))
+    if "ehl-stred" in monitors:
+        results.append(run_hnl(arg, traces_dir, files, "ehl-stred"))
+    if "shl-le" in monitors:
+        results.append(run_hnl(arg, traces_dir, files, "shl-le"))
+    if "shl-eq" in monitors:
+        results.append(run_hnl(arg, traces_dir, files, "shl-eq"))
+    if "shl-le-stred" in monitors:
+        results.append(run_hnl(arg, traces_dir, files, "shl-le-stred"))
+    if "shl-eq-stred" in monitors:
+        results.append(run_hnl(arg, traces_dir, files, "shl-eq-stred"))
 
     try:
         rmtree(traces_dir)
@@ -116,11 +124,15 @@ def run_rvhyper(arg, traces_dir, files, rvh_args=None):
 
 
 
-def run_hnl(arg, traces_dir, files, stred=False):
+def run_hnl(arg, traces_dir, files, ty):
     traces_num, trace_len, bits, args = arg
-    stred = "-stred" if stred else ""
+    if ty.startswith("ehl"):
+        mon = f'{ty}-{bits}b'
+    else:
+        assert ty.startswith("shl"), ty
+        mon = ty
     cmd = ["/bin/time", "-f", '%Uuser %Ssystem %eelapsed %PCPU (%Xavgtext+%Davgdata %Mmaxresident)k',
-           join(f"{hnl_dir}/ehl-{bits}b{stred}", "monitor")]
+           join(f"{hnl_dir}/{mon}", "monitor")]
     cmd += files
     p = Popen(cmd, stderr=PIPE, stdout=PIPE, cwd=traces_dir, preexec_fn=os.setsid)
     try:
@@ -163,7 +175,7 @@ def run_hnl(arg, traces_dir, files, stred=False):
     else:
         errlog("Faield running HNL monitor:", out, err)
 
-    return (f"hnl{stred}", traces_dir, traces_num, trace_len, bits, verdict, instances, atoms, reused_mons, reused_verdicts, cpu_time, wall_time, mem, p.returncode)
+    return (f"{ty}", traces_dir, traces_num, trace_len, bits, verdict, instances, atoms, reused_mons, reused_verdicts, cpu_time, wall_time, mem, p.returncode)
 
 def run_mpt(arg, traces_dir, files):
     traces_num, trace_len, bits, args = arg
@@ -230,6 +242,7 @@ def run(args):
     n = 0
 
     print("Altogether,", N, "runs get executed\n")
+    print("-------------------------------------")
 
     with Pool(processes=args.j) as pool,\
          open(args.out, "w") as out:
@@ -257,16 +270,16 @@ def parse_cmd():
     #parser.add_argument("--traces-dir", help="Take traces from this dir. If the dir does not exists, generate traces to this dir", action='store')
 
     parser.add_argument("--traces-lens", help="Comma-separated list of lenghts of traces", action='store',
-                        default=[1000, 2000, 4000])
+                        default=[1000, 2000, 3000])
     parser.add_argument("--traces-nums", help="Comma-separated list of numbers of traces", action='store',
                         default=[1000, 2000, 3000, 4000, 5000])
-    parser.add_argument("--bits", help="Comma-separated list of bits for the alphabet. Supported are any combination of 1, 2, 4, 8, 10.",
-                        action='store', default=[2,8,10])
+    parser.add_argument("--bits", help="Comma-separated list of bits for the alphabet (not affecting mpt and shl monitors). Supported are any combination of 1, 2, 4, 8, 10.",
+                        action='store', default=[2,4,8])
     parser.add_argument("--trials", help="How many times repeat each run", action='store', type=int, default=10)
     parser.add_argument("--timeout", help="In seconds", action='store', type=int, default=120)
-    parser.add_argument("--monitors", help="List of monitors: mpt, rvhyper, hnl, hnl-stred", action='store',
+    parser.add_argument("--monitors", help="List of monitors: mpt, rvhyper, ehl, eh-stred,shl-le,shl-eq,shl-le-stred,shl-eq-stred", action='store',
                         #default="mpt,rvhyper,hnl")
-                        default="hnl")
+                        default="ehl,ehl-stred,shl-le,shl-eq,shl-le-stred,shl-eq-stred")
 
     parser.add_argument("--one-trace", help="Make all traces same", action='store_true', default=False)
     parser.add_argument("--traces-no-stuttering", help="Generate traces with no stuttering", action='store_true', default=False)
