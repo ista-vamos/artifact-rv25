@@ -14,9 +14,10 @@ import signal
 import argparse
 
 bindir = f"{dirname(realpath(__file__))}/"
-#mpt_binary = join(bindir, "mpts/monitor")
-#rvhyper_dir = join(bindir, "rvhyper/")
 hnl_dir = join(bindir, ".")
+mpt_binary = join(bindir, "../../mpt/monitor")
+rvhyper_dir = join(bindir, "../../rvhyper/")
+SPOT_LIBDIR="/home/xchalup4/ifm24/rv23-experiments/mpt-monitors/rvhyper/rvhyper/spot-install/lib/"
 
 def errlog(*args):
     with open(join(dirname(__file__), "log.txt"), "a") as logf:
@@ -57,7 +58,8 @@ def run_one(arg):
     if "ehl" in monitors:
         results.append(run_hnl(arg, traces_dir, files, "ehl"))
     if "ehl-stred" in monitors:
-        results.append(run_hnl(arg, traces_dir, files, "ehl-stred"))
+        if bits < 8:
+            results.append(run_hnl(arg, traces_dir, files, "ehl-stred"))
     if "shl-le" in monitors:
         results.append(run_hnl(arg, traces_dir, files, "shl-le"))
     if "shl-eq" in monitors:
@@ -86,11 +88,16 @@ def run_rvhyper(arg, traces_dir, files, rvh_args=None):
     cmd += ["-S", f"{traces_dir}/od-{bits}b.hltl"] + files
     # print("> ", " ".join(cmd))
 
-    p = Popen(cmd, stderr=PIPE, stdout=PIPE, cwd=traces_dir, preexec_fn=os.setsid)
+    env = ENV.copy()
+    # env["EAHYPER_SOLVER_DIR"] = join(rvhyper_dir, "LTL_SAT_solver")
+    env["LD_LIBRARY_PATH"] = ":".join([join(rvhyper_dir, "lib"),
+                                       SPOT_LIBDIR])
+
+    p = Popen(cmd, stderr=PIPE, stdout=PIPE, cwd=traces_dir, preexec_fn=os.setsid, env=env)
     try:
         out, err = p.communicate(timeout=args.timeout)
         if p.returncode != 0:
-            errlog(env, p, out, err)
+            errlog(p, out, err)
     except TimeoutExpired:
         os.killpg(os.getpgid(p.pid), signal.SIGTERM)
         out, err = p.communicate(timeout=10)
@@ -278,8 +285,7 @@ def parse_cmd():
     parser.add_argument("--trials", help="How many times repeat each run", action='store', type=int, default=10)
     parser.add_argument("--timeout", help="In seconds", action='store', type=int, default=120)
     parser.add_argument("--monitors", help="List of monitors: mpt, rvhyper, ehl, eh-stred,shl-le,shl-eq,shl-le-stred,shl-eq-stred", action='store',
-                        #default="mpt,rvhyper,hnl")
-                        default="ehl,ehl-stred,shl-le,shl-le-stred")
+                        default="mpt,rvhyper,ehl,ehl-stred,shl-le,shl-le-stred")
 
     parser.add_argument("--one-trace", help="Make all traces same", action='store_true', default=False)
     parser.add_argument("--traces-no-stuttering", help="Generate traces with no stuttering", action='store_true', default=False)

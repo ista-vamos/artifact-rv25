@@ -4,8 +4,8 @@ NAME     ?= rvhyper
 SRCDIR   ?= src
 
 # Use clang by default.
-CC  = clang
-CXX = clang++
+CC  = gcc
+CXX = g++
 
 # Be verbose about the build.
 Q ?= @
@@ -27,8 +27,8 @@ CXXFLAGS += -std=c++17
 CXXFLAGS += -I./include
 
 # SPOT lib
-LDFLAGS += -lspot -lbddx -L/home/marek/.local/lib
-CXXFLAGS += -I/home/marek/.local/include
+LDFLAGS += -lspot -lbddx -L/home/marek/.local/lib -L/home/xchalup4/ifm24/rv23-experiments/mpt-monitors/rvhyper/rvhyper/spot-install/lib
+CXXFLAGS += -I/home/marek/.local/include -I/home/xchalup4/ifm24/rv23-experiments/mpt-monitors/rvhyper/rvhyper/spot-install/include
 
 -include config/$(CFG).cfg
 

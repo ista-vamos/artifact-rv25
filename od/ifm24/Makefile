@@ -12,8 +12,8 @@ experiments-short:
 	$(MAKE) fig4-plot
 
 
-experiments:
-	python3 ./run.py --out results/fig4ab.csv
+experiments: prep
+	python3 ./run.py --out results/out.csv
 	#python3 ./run.py --out results/fig4c.csv --bits=1,2,4 --traces-lens=1000 --traces-nums=200,400,600,800 --monitors=ehl,ehl-stred
 	#$(MAKE) fig4-plot
 

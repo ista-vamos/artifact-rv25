@@ -28,9 +28,9 @@ for ALPHABET in 4b 8b 10b 12b; do
     --out-dir ehl-$ALPHABET --csv-header="$CSV_HEADER" \
     --alphabet=$ALPHABET -DMEASURE_CPUTIME=OFF -DCACHE_ATOMS_RESULTS=OFF --reduction reflexive,symmetric
 done
-#
-# for ALPHABET in 2b 4b 6b; do
-#   python3 -OO $HNA/hnl.py "$FORMULA_STRED" \
-#     --out-dir ehl-stred-$ALPHABET --csv-header="$CSV_HEADER" \
-#     --alphabet=$ALPHABET -DMEASURE_CPUTIME=OFF -DCACHE_ATOMS_RESULTS=OFF --reduction reflexive,symmetric
-# done
+
+for ALPHABET in 2b 4b 6b; do
+  python3 -OO $HNA/hnl.py "$FORMULA_STRED" \
+    --out-dir ehl-stred-$ALPHABET --csv-header="$CSV_HEADER" \
+    --alphabet=$ALPHABET -DMEASURE_CPUTIME=OFF -DCACHE_ATOMS_RESULTS=OFF --reduction reflexive,symmetric
+done
