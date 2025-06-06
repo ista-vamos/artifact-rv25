@@ -1,0 +1,138 @@
+diff --git a/Makefile b/Makefile
+index 7bd0c14..22bddba 100644
+--- a/Makefile
++++ b/Makefile
+@@ -23,7 +23,7 @@ DEP    := $(OBJ:%.o=%.d)
+ CXXFLAGS += -Wall -W -Wuninitialized
+ 
+ # Standard compile time flags for C++/CXX projects.
+-CXXFLAGS += -std=c++11
++CXXFLAGS += -std=c++17
+ CXXFLAGS += -I./include
+ 
+ # SPOT lib
+diff --git a/src/Formula.cpp b/src/Formula.cpp
+index e0234a4..539c8ac 100644
+--- a/src/Formula.cpp
++++ b/src/Formula.cpp
+@@ -154,7 +154,7 @@ Formula::hasProperty(std::string property) {
+ bool
+ Formula::reflexive() {
+     if (!ref_done) {
+-        ref = hasProperty("r");
++        ref = true;//hasProperty("r");
+         ref_done = true;
+     }
+     return ref;
+@@ -163,7 +163,7 @@ Formula::reflexive() {
+ bool
+ Formula::symmetric() {
+     if (!symm_done) {
+-        symm = hasProperty("s");
++        symm = true;//hasProperty("s");
+         symm_done = true;
+     }
+     return symm;
+@@ -172,7 +172,7 @@ Formula::symmetric() {
+ bool
+ Formula::transitive() {
+     if (!trans_done) {
+-        trans = (this->forall_vec.size() == 2) && hasProperty("t");
++        trans = false;//(this->forall_vec.size() == 2) && hasProperty("t");
+         trans_done = true;
+     }
+     return trans;
+
+diff --git a/src/Monitoring.cpp b/src/Monitoring.cpp
+index 5da1d3e..70ef11a 100644
+--- a/src/Monitoring.cpp
++++ b/src/Monitoring.cpp
+@@ -24,7 +24,7 @@
+ 
+ Monitoring::Monitoring(Formula &f)
+     : formula(f), mat(f), eventTrie(new Trie(0)), nInstances(0),
+-      nTransitions(0) {
++      nTransitions(0), nViolations(0) {
+     if (mat.representsFalse()) {
+         throw std::runtime_error("formula evaluates to FALSE");
+     }
+@@ -165,9 +165,13 @@ Monitoring::monitorstep(std::list<MonitorAutomaton *> &mas) {
+         MonitorAutomaton *ma = *mas_it;
+         ma->step(mat.aut, mat.trace_vars, mat.ltlaps_set, nTransitions);
+         if (ma->rejecting(mat.aut)) {
++	    ++nViolations;
+             printCEX(ma);
+             delete ma;
+             mas_it = mas.erase(mas_it);
++	    if (FLAG_ALL_ERRORS) {
++		continue;
++	    }
+             return false;
+         }
+         if (ma->accepting(mat.aut)) {
+@@ -228,4 +232,5 @@ Monitoring::printStats() {
+     std::cout << "trie size: " << eventTrie->root()->size() << std::endl;
+     std::cout << "created instances: " << nInstances << std::endl;
+     std::cout << "done transitions: " << nTransitions << std::endl;
++    std::cout << "found violations: " << nViolations << std::endl;
+ }
+diff --git a/src/Monitoring.h b/src/Monitoring.h
+index f866208..335a164 100644
+--- a/src/Monitoring.h
++++ b/src/Monitoring.h
+@@ -35,6 +35,7 @@ class Monitoring {
+     Trie *eventTrie;
+     unsigned nInstances;
+     long nTransitions;
++    unsigned long nViolations;
+ 
+     void instantiateAutomata(std::list<MonitorAutomaton *> &mas);
+     void forkAutomata(std::list<MonitorAutomaton *> &mas,
+diff --git a/src/NoLiveMonitoring.cpp b/src/NoLiveMonitoring.cpp
+index f8d49c5..8f334fe 100644
+--- a/src/NoLiveMonitoring.cpp
++++ b/src/NoLiveMonitoring.cpp
+@@ -83,7 +83,9 @@ NoLiveMonitoring::buildTrieLVL(Trie *&trie, Trace *trace) {
+         return false;
+     }
+     auto &e = trace->currentEvent();
+-    std::cout << trace->name() << " Event: " << e << std::endl;
++    if (!FLAG_QUIET) {
++        std::cout << trace->name() << " Event: " << e << std::endl;
++    }
+     e.restrictProperties(mat.aps);
+     trie = trie->addValue(trace->getId(), e);
+     return true;
+diff --git a/src/flags.cpp b/src/flags.cpp
+index da9eb1b..20937cc 100644
+--- a/src/flags.cpp
++++ b/src/flags.cpp
+@@ -21,3 +21,4 @@
+ bool FLAG_VERBOSE = false;
+ bool FLAG_STATS = false;
+ bool FLAG_QUIET = false;
++bool FLAG_ALL_ERRORS = false;
+diff --git a/src/flags.h b/src/flags.h
+index 78e5791..9bc3af5 100644
+--- a/src/flags.h
++++ b/src/flags.h
+@@ -22,5 +22,6 @@
+ extern bool FLAG_VERBOSE;
+ extern bool FLAG_QUIET;
+ extern bool FLAG_STATS;
++extern bool FLAG_ALL_ERRORS;
+ 
+ #endif /* SRC_FLAGS_H_ */
+diff --git a/src/main.cpp b/src/main.cpp
+index a114e33..38a63c3 100644
+--- a/src/main.cpp
++++ b/src/main.cpp
+@@ -147,6 +147,8 @@ main(int argc, char *const argv[]) {
+             break;
+             GETOPT_OPT("--quiet") : FLAG_QUIET = true;
+             break;
++            GETOPT_OPT("--all-errors") : FLAG_ALL_ERRORS = true;
++            break;
+ 
+             GETOPT_OPTARG("-s") : formula_param = std::string(optarg);
+             fit = FormulaInputType::STRING;

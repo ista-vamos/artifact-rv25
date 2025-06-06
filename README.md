@@ -76,19 +76,15 @@ make -j2
 ## RVHyper
 
 The source code is a clone of the official repository at <https://github.com/reactive-systems/rvhyper>.
-We have done the following changes, the first one to be able to compile RVHyper, the rest to increase
-the fairness of the comparison:
+We have done the following changes, the first one to be able to compile RVHyper, the rest to increase the fairness of the comparison:
 
 - We switched to C++17 standard which was necessary for a successful compilation as the code uses
    some C++ 17 features.
 - We added the ability to look for all possible violations of the given property, so that the monitor
    does not stop after hitting the first error (other monitors also work this way).
-- We do not print every processed event if `-q` is specified on the command line. This is to avoid the overhead
-   of printing (other monitors also do not print the events).
-- We do not build RVHyper with EAHyper, because EAHyper did not seem to work correctly in our tests (it was not
-   able to decide the symmetry of simple formuls).
-   Instead, we hard-coded that the input formula is reflexive and symmetric. Other monitors
-   also "assume" the reflexivity and symmetry without any computation with the formula.
+- We do not print every processed event if `-q` is specified on the command line. This is to avoid the overhead of printing (other monitors also do not print the events).
+- We do not build RVHyper with EAHyper, because EAHyper did not seem to work correctly in our tests (it was not able to decide the symmetry of simple formulas).
+   Instead, we hard-coded that the input formula is reflexive and symmetric. Other monitors also work with the reflexivity and symmetry assumption without any computation on the formula.
 
 All the changes that we have done are summarized in the patch `rvhyper.patch` in this directory.
 
@@ -111,5 +107,9 @@ make -j2
 ## Structure of the artifact
 
 ```
-- ifm24   # Experiments from the paper "Monitoring Extended Hypernode Logic" from iFM 2024
+- hna        sHL monitors
+- hna-ifm24  eHL monitors
+- mpt        MPT monitors
+- rvhyper    RVHyper
+- od   # Experiments with observational determinism
 ```
