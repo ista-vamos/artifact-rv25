@@ -28,9 +28,9 @@ RESULTS_DIR=../results
 prep:
 	mkdir -p $(RESULTS_DIR)
 
-IFM_RESULTS_DIR=../ifm24/od/results
+IFM_RESULTS_DIR=../od/ifm24/results
 plot-ifm: prep
-	./plot-ifm.py $(IFM_RESULTS_DIR)/fig4ab.csv $(IFM_RESULTS_DIR)/fig4c.csv && cp plot.pdf $(RESULTS_DIR)/ifm_plot.pdf
+	./plot-ifm.py $(IFM_RESULTS_DIR)/out.csv && cp plot.pdf $(RESULTS_DIR)/ifm_plot.pdf
 
 FINDATA_RESULTS_DIR=../od/findata/results
 plot-findata: prep
