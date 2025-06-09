@@ -46,12 +46,6 @@ def run_one(arg):
     if "shl-eq" in monitors:
         results.append(run_hnl(arg, traces_dir, files, "shl-eq"))
 
-    try:
-        rmtree(traces_dir)
-    except Exception as e:
-        print("Failed removing traces: ", e, file=stderr)
-        rmtree(traces_dir, ignore_errors=True)
-
     return results
 
 
