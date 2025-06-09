@@ -48,13 +48,13 @@ data_hnl.columns = ["mon", "id", "traces_num", "Length of traces", "Bits", "verd
 data_hnl.replace({"None": None}, inplace=True)
 
 data = data_hnl
-if have_rvhyper:
-    data = pd.concat([data, data_rvhyper[["mon", "traces_num", "Length of traces", "cputime", "Bits", "mem"]]], ignore_index=True)
-if have_mpt:
-    data = pd.concat([data, data_mpt[["mon", "traces_num", "Length of traces", "cputime", "Bits", "mem"]]], ignore_index=True)
+# if have_rvhyper:
+#     data = pd.concat([data, data_rvhyper[["mon", "traces_num", "Length of traces", "cputime", "Bits", "mem"]]], ignore_index=True)
+# if have_mpt:
+#     data = pd.concat([data, data_mpt[["mon", "traces_num", "Length of traces", "cputime", "Bits", "mem"]]], ignore_index=True)
 
 data["Monitor"] = data["mon"].map(
-    {"rvhyper" : r"$\mathit{RVHyper}",
+    {"rvhyper" : r"$\mathit{RVHyper}$",
      "ehl" : r"$\mathit{eHL}$",
      "ehl-stred" : r"$\mathit{eHL_{sr}}$",
      "shl-le" : r"$\mathit{sHL}$",
@@ -70,9 +70,10 @@ ycol = "cputime"
 ######################################################################
 fig, ax = plt.subplots(1, 1, figsize=FIGSIZE)
 ax = [None, ax]
-trlen = 2000
+trlen = 3000
 xcol = "traces_num"
-selected_data = data #[(data["Length of traces"] == trlen)]
+selected_data = data[#(data["Length of traces"] == trlen) &
+                     (data["mon"].isin(["ehl", "shl-le"]))]
 plot2 = sns.lineplot(data=selected_data,
                      x=xcol, y=ycol,
                      hue="Bits", style="Monitor",
@@ -80,8 +81,9 @@ plot2 = sns.lineplot(data=selected_data,
                      markers=True, dashes=True,
                      errorbar=None
                      )
-ax[1].set(xlabel='Number of traces', ylabel='CPU time [s]',
-          title=f'Traces length {trlen}')
+ax[1].set(xlabel='Number of traces', ylabel='CPU time [s]'
+          #title=f'Traces length {trlen}'
+          )
 ax[1].legend(fontsize=7,
              # loc='upper left', ncol=2, prop={'size':12}
             )

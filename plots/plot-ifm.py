@@ -54,7 +54,7 @@ if have_mpt:
     data = pd.concat([data, data_mpt[["mon", "traces_num", "Length of traces", "cputime", "Bits", "mem"]]], ignore_index=True)
 
 data["Monitor"] = data["mon"].map(
-    {"rvhyper" : r"$\mathit{RVHyper}",
+    {"rvhyper" : r"$\mathit{RVHyper}$",
      "ehl" : r"$\mathit{eHL}$",
      "ehl-stred" : r"$\mathit{eHL_{sr}}$",
      "shl-le" : r"$\mathit{sHL}$",
@@ -161,7 +161,7 @@ ax[2].plot(xlim, ylim, linestyle='--', color='k', lw=1, scalex=False, scaley=Fal
 
 def rename(s):
     if s == "Bits_st": return "Bits"
-    if s == "traces_num": return "# traces"
+    if s == "traces_num": return "\# traces"
     return s
 
 ax[2].set(xlabel='CPU time [s] (stutter red.)',

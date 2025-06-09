@@ -30,7 +30,7 @@ prep:
 
 IFM_RESULTS_DIR=../od/ifm24/results
 plot-ifm: prep
-	./plot-ifm.py $(IFM_RESULTS_DIR)/out.csv && cp plot.pdf $(RESULTS_DIR)/ifm_plot.pdf
+	./plot-ifm.py $(IFM_RESULTS_DIR)/out.csv && cp plot-1.pdf $(RESULTS_DIR)/ifm_plot.pdf
 
 FINDATA_RESULTS_DIR=../od/findata/results
 plot-findata: prep
