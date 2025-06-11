@@ -65,16 +65,18 @@ data["Monitor"] = data["mon"].map(
 )
 
 
-FIGSIZE=(6,3)
+FIGSIZE=(6,2.5)
 ycol = "cputime"
 ######################################################################
 fig, ax = plt.subplots(1, 1, figsize=FIGSIZE)
 ax = [None, ax]
-trlen = 4000
+trlen = 3000
 xcol = "traces_num"
 selected_data = data[(data["Length of traces"] == trlen)
-                     & (data["Bits"].isin((2, 8, 10)))
+                     #& (data["Bits"].isin((2, 8, 10)))
+                    & (data["mon"].isin(["ehl", "shl-le", "mpt", 'rvhyper']))
                     ]
+
 plot2 = sns.lineplot(data=selected_data,
                      x=xcol, y=ycol,
                      hue="Bits", style="Monitor",
@@ -95,7 +97,7 @@ fig, ax = plt.subplots(1, 1, figsize=FIGSIZE)
 ax = [ax]
 xcol = "traces_num"
 bt = 8
-selected_data = data[(data["Length of traces"].isin((1000, 2000, 4000)))
+selected_data = data[(data["Length of traces"].isin((1000, 2000, 3000)))
                      & (data["Bits"] == bt)]
 plot1 = sns.lineplot(data=selected_data,
                      x=xcol, y=ycol,
@@ -120,12 +122,11 @@ fig.savefig(f"plot-1.pdf", bbox_inches='tight', dpi=600)
 fig, ax = plt.subplots(1, 1, figsize=FIGSIZE)
 ax = [None, None, ax]
 
-data_nost = data[data["mon"].isin(["ehl","shl-le","shl-eq"])]
+data_nost = data[data["mon"].isin(["ehl", "shl-le"])]
 data_nost = data_nost[["id", "Bits", "cputime", "Length of traces", "traces_num"]]
 
-data_st = data[data["mon"].isin(["ehl-stred","shl-le-stred","shl-eq-stred"])]
+data_st = data[data["mon"].isin(["ehl-stred", "shl-le-stred"])]
 data_st = data_st[["id", "Bits", "cputime", "Length of traces", "traces_num"]]
-
 
 
 trlen = 1000
@@ -137,7 +138,7 @@ selected_data = st_d.join(nost_d, on="id", lsuffix="_st", rsuffix="_nost")
 selected_data["cputime_st"] = selected_data["cputime_st"].fillna(value=TIMEOUT)
 selected_data["cputime_nost"] = selected_data["cputime_nost"].fillna(value=TIMEOUT)
 selected_data = selected_data[(selected_data["Length of traces_st"] == trlen)]
-selected_data = selected_data[(selected_data["traces_num_st"] < 1000)]
+#selected_data = selected_data[(selected_data["traces_num_st"] < 1000)]
 selected_data["Bits"] = selected_data["Bits_st"].astype(int)
 selected_data["traces_num"] = selected_data["traces_num_st"].astype(int)
 sns.scatterplot(data=selected_data,
@@ -161,7 +162,7 @@ ax[2].plot(xlim, ylim, linestyle='--', color='k', lw=1, scalex=False, scaley=Fal
 
 def rename(s):
     if s == "Bits_st": return "Bits"
-    if s == "traces_num": return "\# traces"
+    if s == "traces_num": return r"\# traces"
     return s
 
 ax[2].set(xlabel='CPU time [s] (stutter red.)',
@@ -197,7 +198,7 @@ selected_data = selected_data[(selected_data["Length of traces_st"] == trlen)]
 #selected_data = selected_data[(selected_data["traces_num_st"] < 1000)]
 selected_data["Bits"] = selected_data["Bits_st"].astype(int)
 selected_data["traces_num"] = selected_data["traces_num_st"].astype(int)
-#selected_data = selected_data[(selected_data["Bits"] > 1)]
+#selected_data = selected_data[(selected_data["Bits"] == 8)]
 sns.scatterplot(data=selected_data,
                 x="cputime_st", y="cputime_nost",
                 style="Bits", hue="traces_num",
@@ -214,7 +215,7 @@ xlim = ylim = (m1, m2)
 # 
 
 
-ax[2].set(yscale="symlog")
+#ax[2].set(yscale="symlog")
 ax[2].plot(xlim, ylim, linestyle='--', color='k', lw=1, scalex=False, scaley=False)
 
 ax[2].set(xlabel='CPU time [s] (stutter red.)',
@@ -223,7 +224,7 @@ ax[2].set(xlabel='CPU time [s] (stutter red.)',
 
 h,l = ax[2].get_legend_handles_labels()
 l = [rename(x) for x in l]
-split=5
+split=6
 l1 = ax[2].legend(h[:split], l[:split], fontsize=7,
                loc='upper left')#, ncol=2)
 l2 = ax[2].legend(h[split:],l[split:], loc='center right', fontsize=7)
