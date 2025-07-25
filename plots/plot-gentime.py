@@ -27,7 +27,7 @@ data["Monitor"] = data["mon"].map(
 )
 
 
-FIGSIZE=(3,3)
+FIGSIZE=(3,2.5)
 ycol = "cputime"
 ######################################################################
 fig, ax = plt.subplots(1, 1, figsize=FIGSIZE)

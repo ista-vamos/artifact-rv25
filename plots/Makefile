@@ -36,6 +36,11 @@ FINDATA_RESULTS_DIR=../od/findata/results
 plot-findata: prep
 	./plot-findata.py $(FINDATA_RESULTS_DIR)/out.csv  && cp plot.pdf $(RESULTS_DIR)/findata_plot.pdf
 
+plot-join: prep
+	./plot-join.py $(IFM_RESULTS_DIR)/out.csv $(FINDATA_RESULTS_DIR)/out.csv  && cp plot.pdf $(RESULTS_DIR)/plot.pdf
+
+
+
 OPENSSL_RESULTS_DIR=../od/openssl/results
 plot-openssl: prep
 	./plot-openssl.py $(OPENSSL_RESULTS_DIR)/out.csv  && cp plot.pdf $(RESULTS_DIR)/openssl_plot.pdf
