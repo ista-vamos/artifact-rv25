@@ -56,7 +56,18 @@ LDCMD=clang++ make -j4
 
 ## eHL and sHL monitors
 
-Done automatically by scripts.
+These monitors are built automatically by scripts.
+
+### sHL monitors
+
+TBD
+
+### eHL monitors
+
+The directory `hna-ifm24` contains code of the `hna` project that was used to run experiments for the paper "Monitoring Extended Hypernode Logic" presented at iFM'24.
+We made the following changes to the code:
+
+- The generated code is not formatted with `clang-format`. Formatting the generated code may take a lot of time and it would introduce bias into measurements of the time of code generation.
 
 ## MPTs monitors
 
