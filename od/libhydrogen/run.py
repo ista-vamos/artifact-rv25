@@ -23,18 +23,19 @@ def errlog(*args):
 def run_one(arg):
     traces_num, nbytes, args = arg
 
-    # -- GENERATE TRACES
-    print(f"  \033[37;1m.. [{datetime.datetime.now().time()}] running # traces = {traces_num}, nbytes = {nbytes}\033[0m", file=stderr)
-    stderr.flush()
-
+    #print(f"  \033[37;1m.. [{datetime.datetime.now().time()}] running # traces = {traces_num}, nbytes = {nbytes}\033[0m", file=stderr)
+    #stderr.flush()
 
     results = []
-    results.append(run_monitor(arg))
+    if "shl" in args.monitors:
+        results.append(run_shl(arg))
+    if "ehl" in args.monitors:
+        results.append(run_ehl(arg))
 
     return results
 
 
-def run_monitor(arg):
+def run_shl(arg):
     traces_num, nbytes, args = arg
     mon_dir = f"{bindir}/mon"
     traces_dir = f"{bindir}/traces-{nbytes}/traces-{traces_num}"
@@ -84,7 +85,62 @@ def run_monitor(arg):
     else:
         errlog("Faield running HNL monitor:", out, err)
 
-    return (f"shl", traces_num, nbytes, verdict, instances, atoms, cpu_time, wall_time, mem, p.returncode)
+    return ("shl", traces_num, nbytes, verdict, instances, atoms, cpu_time, wall_time, mem, p.returncode)
+
+
+def run_ehl(arg):
+    traces_num, nbytes, args = arg
+    mon_dir = f"{bindir}/mon-ehl"
+    traces_dir = f"{bindir}/traces-{nbytes}-ifm24/traces-{traces_num}"
+    files = [join(traces_dir, fl) for fl in listdir(traces_dir) if fl.endswith(".tr")]
+
+    cmd = ["/bin/time", "-f", '%Uuser %Ssystem %eelapsed %PCPU (%Xavgtext+%Davgdata %Mmaxresident)k',
+           join(mon_dir, "monitor")]
+    cmd += files
+    p = Popen(cmd, stderr=PIPE, stdout=PIPE, preexec_fn=os.setsid)
+    try:
+        out, err = p.communicate(timeout=args.timeout)
+    except TimeoutExpired:
+        os.killpg(os.getpgid(p.pid), signal.SIGTERM)
+        out, err = p.communicate(timeout=10)
+    assert err is not None, cmd
+
+    cpu_time=None
+    wall_time=None
+    mem=None
+    instances, atoms, reused_mons, reused_verdicts = None, None, None, None
+    verdict = None
+    if p.returncode in (0, 1):
+        for line in out.splitlines():
+            line = line.strip()
+            if line.startswith(b"Total formula"):
+                instances = int(line.split()[3])
+            elif line.startswith(b"Total atom"):
+                atoms = int(line.split()[3])
+            elif line.startswith(b"Reused monitors"):
+                reused_mons = int(line.split()[2])
+            elif line.startswith(b"Reused verdicts"):
+                reused_verdicts = int(line.split()[2])
+            elif b'TRUE' in line:
+                verdict = 'TRUE'
+            elif b'FALSE' in line:
+                verdict = 'FALSE'
+
+        for line in err.splitlines():
+            if b"elapsed" in line:
+                parts = line.split()
+                assert b"user" in parts[0]
+                assert b"elapsed" in parts[2]
+                assert b"maxresident" in parts[5]
+                cpu_time = float(parts[0][:-4])
+                wall_time = float(parts[2][:-7])
+                mem = int(parts[5][:-13])/1024.0
+    else:
+        errlog("Faield running HNL monitor:", out, err)
+
+    return (f"ehl", traces_num, nbytes, verdict, instances, atoms, cpu_time, wall_time, mem, p.returncode)
+
+
 
 def get_params(args):
     for N in args.traces_nums:
@@ -130,6 +186,9 @@ def parse_cmd():
     parser.add_argument("--verbose", help="Print some extra messages", action='store_true', default=False)
     #parser.add_argument("--traces-dir", help="Take traces from this dir. If the dir does not exists, generate traces to this dir", action='store')
 
+    parser.add_argument("--monitors", help="Comma-separated list of monitors: shl,ehl (default: shl,ehl)", action='store',
+                        default="shl,ehl")
+
     parser.add_argument("--traces-nums", help="Comma-separated list of numbers of traces", action='store',
                         default=[500, 1000, 1500])
     parser.add_argument("--nbytes", help="Comma-separated list of nbytes for the alphabet. Currently only 16.",
@@ -150,6 +209,8 @@ def parse_cmd():
     for n in args.traces_nums:
         if n not in (500, 1000, 1500):
             raise RuntimeError("Invalid nnumber of traces given")
+
+    args.monitors = args.monitors.split(',')
 
     return args
 
