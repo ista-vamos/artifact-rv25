@@ -1,5 +1,7 @@
 # Artifact for RV'25
 
+## Using docker
+
 ## Building
 
 Setup python virtual environment
@@ -21,7 +23,6 @@ Bootstrap the `hna` project -- this is the project that generates the monitors.
 # skip this command if you have run it in this terminal already
 source venv/bin/activate
 
-
 # get the hna project
 git submodule update --init
 cd hna
@@ -33,7 +34,7 @@ pip3 install -r requirements
 ./build-vamos.sh
 
 # configure the hna project
-cmake .
+cmake . -DCMAKE_BUILD_TYPE=Release
 ```
 
 ### Building OpenSSL with fuzzing

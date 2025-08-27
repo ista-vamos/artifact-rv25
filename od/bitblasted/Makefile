@@ -2,6 +2,8 @@ all: fig4 tab1 prep
 
 prep:
 	mkdir -p results
+	./generate-ehl.sh
+	./generate-shl.sh
 
 short: fig4-short tab1-short
 

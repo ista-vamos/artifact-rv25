@@ -15,5 +15,5 @@ cd hna
 cmake .
 ```
 
-To re-generate the monitors, run the script `generate.sh`.
+To re-generate the monitors, run the scripts `make`.
 Check the script to see (or modify) the commands for generating the monitors.
