@@ -207,8 +207,8 @@ def parse_cmd():
         if b not in (4, 8, 16):
             raise RuntimeError("Invalid bytes given")
     for n in args.traces_nums:
-        if n not in (500, 1000, 1500):
-            raise RuntimeError("Invalid nnumber of traces given")
+        if n not in (500, 1000, 1500, 2000):
+            raise RuntimeError("Invalid number of traces given")
 
     args.monitors = args.monitors.split(',')
 
