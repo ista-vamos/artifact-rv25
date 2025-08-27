@@ -14,10 +14,12 @@ import signal
 import argparse
 
 bindir = f"{dirname(realpath(__file__))}/"
+artifact_dir = join(bindir, "../..")
 hnl_dir = join(bindir, ".")
-mpt_binary = join(bindir, "../../mpt/monitor")
-rvhyper_dir = join(bindir, "../../rvhyper/")
-SPOT_LIBDIR="/home/xchalup4/ifm24/rv23-experiments/mpt-monitors/rvhyper/rvhyper/spot-install/lib/"
+rvhyper_dir = join(artifact_dir, "rvhyper")
+SPOT_LIBDIR=join(artifact_dir, "rvhyper/spot-2.8.7/spot-install/lib/")
+
+mpt_binary = join(artifact_dir, "mpt/monitor")
 
 
 def errlog(*args):
