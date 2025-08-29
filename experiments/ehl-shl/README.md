@@ -23,3 +23,17 @@ into `shl-le` directory. Each of these directories contain en executable `monito
 that is the actual compiled monitor.
 
 Check the scripts to see (or modify) the commands for generating the monitors.
+
+# Running experiments with custom bitwidths
+
+You can manually run experiments with a chosen bit-width with:
+```
+BITWIDTH=6
+
+# generate monitors
+./generate-ehl.sh ${BITWIDTH}b
+./generate-shl.sh
+
+# run experiments
+python3 ./run.py --bits=$BITWIDTH --traces-nums=1000,2000 --traces-lens=1000,3000 --trials=1
+```

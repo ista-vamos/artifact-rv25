@@ -1,33 +1,34 @@
 all: prep
 
-prep: ehl-8b/monitor shl-le/monitor
-	mkdir -p results
+ehl-4b/monitor:
+	./generate-ehl.sh 4b
 
 ehl-8b/monitor:
-	./generate-ehl.sh
+	./generate-ehl.sh 8b
+
+ehl-10b/monitor:
+	./generate-ehl.sh 10b
+
+ehl-12b/monitor:
+	./generate-ehl.sh 12b
 
 shl-le/monitor:
 	./generate-shl.sh
 
 
-run-short: prep
-	python3 ./run.py --out results/out.csv --traces-nums=1000,2000,4000 --trials=3 --traces-lens=1000
+run-short: shl-le/monitor ehl-10b/monitor 
+	mkdir -p results
+	python3 ./run.py --out results/out.csv --bits=10 --traces-nums=1000,2000,4000 --trials=3 --traces-lens=1000
 
 
-run: prep
+run: shl-le/monitor ehl-4b/monitor ehl-8b/monitor ehl-10b/monitor ehl-12b/monitor
+	mkdir -p results
 	python3 ./run.py --out results/out.csv
 
 
 
-# IFM_RESULTS_DIR=../ifm24/od/results
-# plots: prep
-# 	cd plots && ./plot.py $(IFM_RESULTS_DIR)/fig4ab.csv $(IFM_RESULTS_DIR)/fig4c.csv && cp plot.pdf ../fig4.pdf
-# 
-# 
-# tab1-show:
-# 	cd plots && ./tab.py ../results/tab1.csv  | tee ../results/tab1.txt
-# 
-# 
+# RESULTS_DIR=../../results
+ 
 # original:
 # 	cd plots && ./plot.py ../csv_from_paper/fig4ab.csv ../results/fig4c.csv && cp plot.pdf ../results/fig4.pdf
 # 	cd plots && ./tab.py ../csv_from_paper/tab1.csv | tee ../results/tab1.txt

@@ -14,13 +14,7 @@ import signal
 import argparse
 
 bindir = f"{dirname(realpath(__file__))}/"
-artifact_dir = join(bindir, "../..")
 hnl_dir = join(bindir, ".")
-rvhyper_dir = join(artifact_dir, "rvhyper")
-SPOT_LIBDIR=join(artifact_dir, "rvhyper/spot-2.8.7/spot-install/lib/")
-
-mpt_binary = join(artifact_dir, "mpt/monitor")
-
 
 def errlog(*args):
     with open(join(dirname(__file__), "log.txt"), "a") as logf:
@@ -54,10 +48,6 @@ def run_one(arg):
 
     monitors = args.monitors
 
-    if "mpt" in monitors:
-        results.append(run_mpt(arg, traces_dir, files))
-    if "rvhyper" in monitors:
-        results.append(run_rvhyper(arg, traces_dir, files))
     if "ehl" in monitors:
         results.append(run_hnl(arg, traces_dir, files, "ehl"))
     if "ehl-stred" in monitors:
@@ -79,58 +69,6 @@ def run_one(arg):
         rmtree(traces_dir, ignore_errors=True)
 
     return results
-
-def run_rvhyper(arg, traces_dir, files, rvh_args=None):
-    traces_num, trace_len, bits, args = arg
-    rvh = join(rvhyper_dir, "build/release/rvhyper")
-    assert access(rvh, X_OK), f"Cannon find rvhyper binary, assumed is {rvh}"
-    cmd = ["/bin/time", "-f", '%Uuser %Ssystem %eelapsed %PCPU (%Xavgtext+%Davgdata %Mmaxresident)k', rvh]
-    if rvh_args:
-        cmd += rvh_args
-    cmd += ["-S", f"{traces_dir}/od-{bits}b.hltl"] + files
-    # print("> ", " ".join(cmd))
-
-    env = ENV.copy()
-    # env["EAHYPER_SOLVER_DIR"] = join(rvhyper_dir, "LTL_SAT_solver")
-    env["LD_LIBRARY_PATH"] = ":".join([join(rvhyper_dir, "lib"),
-                                       SPOT_LIBDIR])
-
-    p = Popen(cmd, stderr=PIPE, stdout=PIPE, cwd=traces_dir, preexec_fn=os.setsid, env=env)
-    try:
-        out, err = p.communicate(timeout=args.timeout)
-        if p.returncode != 0:
-            errlog(p, out, err)
-    except TimeoutExpired:
-        os.killpg(os.getpgid(p.pid), signal.SIGTERM)
-        out, err = p.communicate(timeout=10)
-
-    assert err is not None, cmd
-
-    cpu_time=None
-    wall_time=None
-    mem=None
-
-    if p.returncode == 0:
-        for line in err.splitlines():
-            if b"elapsed" in line:
-                parts = line.split()
-                assert b"user" in parts[0]
-                assert b"elapsed" in parts[2]
-                assert b"maxresident" in parts[5]
-
-                try:
-                    cpu_time = float(parts[0][:-4])
-                    wall_time = float(parts[2][:-7])
-                    mem = int(parts[5][:-13])/1024.0
-                except ValueError as e:
-                    print(err, file=sys.stderr)
-                    raise e
-    else:
-        errlog("Faield running RVHyper:", out, err)
-
-
-    return (f"rvhyper", traces_dir, traces_num, trace_len, bits, cpu_time, wall_time, mem, p.returncode)
-
 
 
 def run_hnl(arg, traces_dir, files, ty):
@@ -281,15 +219,14 @@ def parse_cmd():
     #parser.add_argument("--traces-dir", help="Take traces from this dir. If the dir does not exists, generate traces to this dir", action='store')
 
     parser.add_argument("--traces-lens", help="Comma-separated list of lenghts of traces", action='store',
-                        default=[1000, 2000, 3000])
+                        default=[3000])
     parser.add_argument("--traces-nums", help="Comma-separated list of numbers of traces", action='store',
                         default=[1000, 2000, 3000, 4000, 5000])
     parser.add_argument("--bits", help="Comma-separated list of bits for the alphabet (not affecting mpt and shl monitors). Supported are any combination of 4, 8, 10, 12.",
                         action='store', default=[4,8,10,12])
     parser.add_argument("--trials", help="How many times repeat each run", action='store', type=int, default=10)
     parser.add_argument("--timeout", help="In seconds", action='store', type=int, default=120)
-    parser.add_argument("--monitors", help="List of monitors: mpt, rvhyper, ehl, eh-stred,shl-le,shl-eq,shl-le-stred,shl-eq-stred", action='store',
-                        #default="mpt,rvhyper,hnl")
+    parser.add_argument("--monitors", help="List of monitors: ehl, eh-stred,shl-le,shl-eq,shl-le-stred,shl-eq-stred", action='store',
                         default="ehl,shl-le")
 
     parser.add_argument("--one-trace", help="Make all traces same", action='store_true', default=False)
@@ -297,8 +234,6 @@ def parse_cmd():
 
     args = parser.parse_args()
 
-    #if args.traces_dir:
-    #    args.traces_dir = abspath(args.traces_dir)
     if isinstance(args.traces_lens, str):
         args.traces_lens = list(map(int, args.traces_lens.split(",")))
     if isinstance(args.traces_nums, str):
