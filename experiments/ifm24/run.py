@@ -281,11 +281,11 @@ def parse_cmd():
     parser.add_argument("--traces-nums", help="Comma-separated list of numbers of traces", action='store',
                         default=[1000, 2000, 3000, 4000, 5000])
     parser.add_argument("--bits", help="Comma-separated list of bits for the alphabet (not affecting mpt and shl monitors). Supported are any combination of 1, 2, 4, 8, 10.",
-                        action='store', default=[2,4,8])
+                        action='store', default=[8])
     parser.add_argument("--trials", help="How many times repeat each run", action='store', type=int, default=10)
     parser.add_argument("--timeout", help="In seconds", action='store', type=int, default=120)
     parser.add_argument("--monitors", help="List of monitors: mpt, rvhyper, ehl, eh-stred,shl-le,shl-eq,shl-le-stred,shl-eq-stred", action='store',
-                        default="mpt,rvhyper,ehl,ehl-stred,shl-le,shl-le-stred")
+                        default="mpt,rvhyper,ehl,shl-le")
 
     parser.add_argument("--one-trace", help="Make all traces same", action='store_true', default=False)
     parser.add_argument("--traces-no-stuttering", help="Generate traces with no stuttering", action='store_true', default=False)

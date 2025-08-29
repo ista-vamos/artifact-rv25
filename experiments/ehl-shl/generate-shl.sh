@@ -18,6 +18,9 @@ python3 -OO $HNA/hnl.py "$FORMULA" \
 
 
 
+
+
+
 #FORMULA_STRED='forall t1, t2: (!([in(t1)] <= [in(t2)] && [in(t2)] <= [in(t1)]) || ([out(t1)] <= [out(t2)] && [out(t2)] <= [out(t1)]))'
 #FORMULA_EQ='forall t1, t2: (!(in(t1) = in(t2)) || (out(t1) = out(t2)))'
 #FORMULA_STRED_EQ='forall t1, t2: (!([in(t1)] = [in(t2)]) || ([out(t1)] = [out(t2)]))'

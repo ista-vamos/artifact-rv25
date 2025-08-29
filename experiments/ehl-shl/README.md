@@ -14,10 +14,10 @@ source ../../venv/bin/activate
 
 There are two versions of experiments:
 
- - `make run`         full experiments
- - `make run-short`   short version of experiments
+ - `make full`         full experiments
+ - `make short`   short version of experiments
 
-Monitors are generated automatically when running `make run` or `make run-short`.
+Monitors are generated automatically when running `make full` or `make short`.
 The eHL monitor is generated into `ehl-8b` directory and the sHL monitor
 into `shl-le` directory. Each of these directories contain en executable `monitor`
 that is the actual compiled monitor.
@@ -37,3 +37,5 @@ BITWIDTH=6
 # run experiments
 python3 ./run.py --bits=$BITWIDTH --traces-nums=1000,2000 --traces-lens=1000,3000 --trials=1
 ```
+
+The eHL monitor is generated into the directory `ehl-${BITWIDTH}b`.

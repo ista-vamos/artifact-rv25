@@ -51,8 +51,7 @@ def run_one(arg):
     if "ehl" in monitors:
         results.append(run_hnl(arg, traces_dir, files, "ehl"))
     if "ehl-stred" in monitors:
-        if bits < 8:
-            results.append(run_hnl(arg, traces_dir, files, "ehl-stred"))
+        results.append(run_hnl(arg, traces_dir, files, "ehl-stred"))
     if "shl-le" in monitors:
         results.append(run_hnl(arg, traces_dir, files, "shl-le"))
     if "shl-eq" in monitors:
@@ -245,6 +244,33 @@ def parse_cmd():
 
     return args
 
+def shl_monitors(args):
+    for m in args.monitors:
+        if m.startswith("shl"):
+            yield m
+
 if __name__ == "__main__":
     args = parse_cmd()
+
+    problem=False
+    for mon in shl_monitors(args):
+        mon = join(f"{hnl_dir}/{mon}", "monitor")
+        if not (isfile(mon) and access(mon, X_OK)):
+            print(f"Did not find sHL monitor ({mon}). Please run `'./generate-shl.sh` "
+                   "first (you may need to modify the script to generate the right monitor).",
+                  file=stderr)
+            problem=True
+
+    for bits in args.bits:
+        mon = join(f"{hnl_dir}/ehl-{bits}b", "monitor")
+        if not (isfile(mon) and access(mon, X_OK)):
+            print(f"Did not find eHL monitor for {bits} bits. Please run `'./generate-ehl.sh "
+                  f"{bits}b'` first.",
+                  file=stderr)
+            problem=True
+
+    if problem:
+        exit(1)
+
+    # do it!
     run(args)
