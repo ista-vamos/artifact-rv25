@@ -290,7 +290,7 @@ def parse_cmd():
     parser.add_argument("--timeout", help="In seconds", action='store', type=int, default=120)
     parser.add_argument("--monitors", help="List of monitors: mpt, rvhyper, ehl, eh-stred,shl-le,shl-eq,shl-le-stred,shl-eq-stred", action='store',
                         #default="mpt,rvhyper,hnl")
-                        default="mpt,rvhyper,ehl,ehl-stred,shl-le,shl-le-stred")
+                        default="ehl,shl-le")
 
     parser.add_argument("--one-trace", help="Make all traces same", action='store_true', default=False)
     parser.add_argument("--traces-no-stuttering", help="Generate traces with no stuttering", action='store_true', default=False)

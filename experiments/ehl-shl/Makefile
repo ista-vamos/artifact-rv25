@@ -1,18 +1,20 @@
 all: prep
 
-prep:
+prep: ehl-8b/monitor shl-le/monitor
 	mkdir -p results
+
+ehl-8b/monitor:
 	./generate-ehl.sh
+
+shl-le/monitor:
 	./generate-shl.sh
 
-short: fig4-short tab1-short
+
+run-short: prep
+	python3 ./run.py --out results/out.csv --traces-nums=1000,2000,4000 --trials=3 --traces-lens=1000
 
 
-run-short:
-	python3 ./run.py --out results/out.csv --bits=8 --traces-nums=1000,2000,4000 --trials=3 --traces-lens=1000
-
-
-run:
+run: prep
 	python3 ./run.py --out results/out.csv
 
 
