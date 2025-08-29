@@ -1,20 +1,19 @@
+# Comparing eHL and sHL monitors
+
 This folder contains scripts to monitor OD of traces with 8-bit bit-blasted integers.
 Bit-blasting is necessary because we compare with RVHyper.
 
+These are the experiments reported in Fig. 7 bottom.
+
+## Running
+
+If you built the artifact manually outside docker, don't forget to run:
 ```
-# Don't forget
 source ../../venv/bin/activate
 ```
 
-If there is no `hna` directory here, run
-
-```
-git submodule update --init
-cd hna
-cmake .
-```
-
 There are two versions of experiments:
+
  - `make run`         full experiments
  - `make run-short`   short version of experiments
 
