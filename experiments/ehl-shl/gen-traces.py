@@ -26,18 +26,22 @@ p = 0.1
 #p_err = 0
 
 if len(sys.argv) < 4:
-    print("Need arguments: <number of traces> <length of traces> <bits (number of atomic props.)>", file=sys.stderr)
+    print("Need arguments: <number of traces> <length of traces> <bits> [params]", file=sys.stderr)
     print(
 f"""
-The script will generate <number of traces> of length <length of traces>
-Traces will contain `in` events with probability p={p} and a dummy (false) events
-with complementary probability 1-p. The `in` event has atomic propositions
-in_0, in_1, ... in_(<bits>-1).
-They are populated from uniform range `(0, 2**<bits>-1)`, i.e., together `in`
-is a random unsigned number on `BITS` bits.
-The last event is an event that has also randomly set `out_*` bits.
+The script will generate <number of traces> of length <length of traces>.
+Traces will contain lines `in:out` where `in` and `out` are unsigned integer
+numbers with <bits> bits, populated from uniform range `(0, 2**<bits>-1)`.
+However, there is this following structure. All but the last `out` fields are 0.
+The last `out` field is picked randomly as mentioned above.
+Also, with probability 1-<p> (p={p} now), there is a dummy event generated which
+is `0;0`.  Parameter `p` can be set in the script.
 
-Parameter `p` can be set in the script.
+[params] can be a comma-separated list of 'force-od', 'no-stuttering', 'outdir=DIR'.
+These parameters have this meaning:
+ - `force-od`       Generate traces such that observational determinism holds for them.
+ - `no-stuttering`  Generate traces with no stuttering.
+ - `outdir=DIR`     Generate traces into DIR directory.
 """, file=sys.stderr)
     exit(1)
 
@@ -124,18 +128,6 @@ while trnum < TRACE_NUM:
         for e1 in t_tmp:
             print(e1.encode(), file=tf)
 
-# # DUMP OD PROPERTY ON THE GIVEN NUMBER OF BYTES
-# with open(f"{OUTDIR}/od-{BITS}b.hltl", "w") as f:
-#     f.write("forall x. forall y.\n(\n")
-#     for b in range(0, BITS):
-#         f.write(" & " if b > 0 else "   ")
-#         f.write(f"(out_{b}_x <-> out_{b}_y)\n")
-#     f.write(")\nW\n~(\n")
-#     for b in range(0, BITS):
-#         f.write(" & " if b > 0 else "   ")
-#         f.write(f"(in_{b}_x <-> in_{b}_y)\n")
-#     f.write(")\n")
-#
 print(f"Output dir: {OUTDIR}")
 print(f"Forced OD: {FORCE_OD}")
 print(f"No stuttering: {NO_STUTTERING}")
