@@ -18,6 +18,21 @@ TBD
 - experiments   # Experiments with observational determinism
 ```
 
+### eHL and sHL monitors
+
+XXX: hna vs hna-ifm24
+XXX: RVHyno
+
+### MPT monitors
+
+MPT monitors were taken from XXX.
+We modified them to read events in the RVHyper format, as that is the format of traces
+we use in the experiments with MPTs.
+
+### RVHyper monitors
+
+XXX: Origin and Modifications
+
 
 ## Building
 
