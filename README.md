@@ -4,9 +4,15 @@ The artifact was created to the paper *Monitoring Hypernode Logic Over Infinite 
 accepted at
 [25th International Conference on Runtime Verification (RV'25)](https://rv25.isec.tugraz.at/).
 
-## Using docker
+## Setting up the docker image
 
 TBD
+
+## Running
+
+For short version of the experiments, run `make short`. These experiments take a few minutes.
+For full experiments, run `make full`. These experiments take XXX.
+
 
 ## Structure of the artifact
 
