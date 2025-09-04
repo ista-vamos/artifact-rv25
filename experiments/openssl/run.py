@@ -148,8 +148,8 @@ def parse_cmd():
                         default=[1000, 5000, 10000, 15000, 20000])
     parser.add_argument("--trials", help="How many times repeat each run", action='store', type=int, default=10)
     parser.add_argument("--timeout", help="In seconds", action='store', type=int, default=300)
-    parser.add_argument("--monitors", help="List of monitors: mpt, rvhyper, ehl, shl-eq", action='store',
-                        default="ehl,shl-eq")
+    parser.add_argument("--monitors", help="List of monitors: shl-eq", action='store',
+                        default="shl-eq")
 
     parser.add_argument("--traces-no-stuttering", help="Generate traces with no stuttering", action='store_true', default=False)
 
