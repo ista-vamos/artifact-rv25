@@ -1,19 +1,27 @@
-This folder contains scripts to monitor OD of traces with finite integers.
-For RVHyper, we bitblast the traces
+This folder contains scripts to monitor Async OD of traces generated from OpenSSL. 
 
+These are the experiments reported in Table 1.
 
+## Running
+
+If you built the artifact manually outside docker, don't forget to run:
 ```
-# Don't forget
 source ../../venv/bin/activate
 ```
 
-If there is no `hna` directory here, run
+There are two versions of experiments:
 
-```
-git submodule update --init
-cd hna
-cmake .
-```
+ - `make full`    full experiments
+ - `make short`   short version of experiments
 
-To re-generate the monitors, run the script `generate.sh`.
-Check the script to see (or modify) the commands for generating the monitors.
+The monitor is generated automatically when running `make full` or `make short`
+into the `shl-eq` directory.
+The directory contains an executable `monitor` that is the actual
+compiled monitor.
+
+Check the scripts to see (or modify) the commands for generating the monitors.
+
+## Traces
+
+The traces are in the `traces` sub-directory, see the README in that sub-directory.
+
