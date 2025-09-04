@@ -20,13 +20,8 @@ plot-join: prep
 
 
 OPENSSL_RESULTS_DIR=../experiments/openssl/results
-plot-openssl: prep
-	./plot-openssl.py $(OPENSSL_RESULTS_DIR)/out.csv  && cp plot.pdf $(RESULTS_DIR)/openssl_plot.pdf
-
-
-
-#tab1:
-#	./tab.py ../results/tab1.csv  | tee ../results/tab1.txt
+tab:
+	./tab.py $(OPENSSL_RESULTS_DIR)/out.csv | tee ../results/openssl_tab.txt
 
 
 # original:

@@ -23,10 +23,10 @@ def errlog(*args):
             print(a, file=logf)
 
 def run_one(arg):
-    traces_num, monitors, bits, args = arg
+    traces_num, monitors, bts, args = arg
     traces_dir = args.traces_dir
     if traces_dir is None:
-        traces_dir = join(bindir, f'traces/traces-{bits}b')
+        traces_dir = join(bindir, f'traces/traces-{bts}b')
 
     # get the list of files
     files = [fl for fl in listdir(traces_dir) if fl.endswith(".tr")][:traces_num]
@@ -42,9 +42,9 @@ def run_one(arg):
 
 
 def run_hnl(arg, traces_dir, files, ty):
-    traces_num, trace_len, bits, args = arg
+    traces_num, monitors, bts, args = arg
     if ty.startswith("ehl"):
-        mon = f'{ty}-{bits}b'
+        mon = f'{ty}-{bts}b'
     else:
         assert ty.startswith("shl"), ty
         mon = ty
@@ -62,20 +62,11 @@ def run_hnl(arg, traces_dir, files, ty):
     cpu_time=None
     wall_time=None
     mem=None
-    instances, atoms, reused_mons, reused_verdicts = None, None, None, None
     verdict = None
     if p.returncode in (0, 1):
         for line in out.splitlines():
             line = line.strip()
-            if line.startswith(b"Total formula"):
-                instances = int(line.split()[3])
-            elif line.startswith(b"Total atom"):
-                atoms = int(line.split()[3])
-            elif line.startswith(b"Reused monitors"):
-                reused_mons = int(line.split()[2])
-            elif line.startswith(b"Reused verdicts"):
-                reused_verdicts = int(line.split()[2])
-            elif b'TRUE' in line:
+            if b'TRUE' in line:
                 verdict = 'TRUE'
             elif b'FALSE' in line:
                 verdict = 'FALSE'
@@ -92,10 +83,10 @@ def run_hnl(arg, traces_dir, files, ty):
     else:
         errlog("Faield running HNL monitor:", out, err)
 
-    return (f"{ty}", traces_dir, traces_num, trace_len, bits, verdict, instances, atoms, reused_mons, reused_verdicts, cpu_time, wall_time, mem, p.returncode)
+    return (f"{ty}", traces_dir, traces_num, bts, verdict, cpu_time, wall_time, mem, p.returncode)
 
 
-mon2bits = {
+mon2bts = {
         'shl-eq' : 64,
         'ehl' : 8,
 }
@@ -104,7 +95,7 @@ def get_params(args):
     for N in args.traces_nums:
         for M in args.monitors:
             for _ in range(0, args.trials):
-                yield N, [M], mon2bits[M], args
+                yield N, [M], mon2bts[M], args
 
 def run(args):
     print(f"\033[1;34mRunning using {args.j or 'automatic # of'} workers, output file is {args.out}\n\033[0m", file=stderr)
