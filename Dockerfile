@@ -26,10 +26,7 @@ RUN apt-get install -y --no-install-recommends\
 	texlive-latex-base\
 	texlive-latex-extra
 
-RUN apt-get install -y --no-install-recommends\
-	ssh
-
-COPY artifact-rv25 /opt/artifact
+COPY . /opt/artifact
 WORKDIR /opt/artifact/
 
 RUN git clean -xdf
