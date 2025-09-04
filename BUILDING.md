@@ -2,25 +2,23 @@
 
 ## Building docker image
 
+Go into the top-level directory of the artifact
+(the one containing `Dockerfile`), and run:
+
+```sh
+build . -t rv25-shl
+```
+
 
 ## Building without docker
 
-### Structure of the artifact
+The best is to follow the steps from `Dockerfile`.
+The guide below serves explains and elaborates on
+of those steps.
 
-```
-- hna        sHL monitors
-- hna-ifm24  eHL monitors
-- mpt        MPT monitors
-- rvhyper    RVHyper
-- experiments   # Experiments with observational determinism
-```
+### Python virtual environment
 
-### Building without docker
-
-The best would be to follow the steps from `Dockerfile`.
-Here are the main steps that you need to do.
-
-Setup python virtual environment
+First, outside docker, you may need to setup python virtual environment:
 
 ```shell
 python3 -m venv venv/
@@ -32,6 +30,8 @@ run this command:
 ```shell
 source venv/bin/activate
 ```
+
+### Building HNA
 
 Bootstrap the `hna` project -- this is the project that generates the monitors.
 
@@ -50,15 +50,31 @@ pip3 install -r requirements
 cmake . -DCMAKE_BUILD_TYPE=Release
 ```
 
-For generating plots, you need also:
+For generating plots, you also need:
 ```
 pip install matplotlib pandas seaborn
+```
+
+Optionally, you may also install latex if you don't have.
+Labels in plots will then be typeset using Latex:
+
+```
 apt-get install texlive-latex-base texlive-latex-extra
 ```
 
-NOTE: installing latex downloads a lot of data. You may skip this step
+NOTE: installing Latex downloads a lot of data. You may skip this step
 and the plotting scripts will automatically avoid using Latex.
 
+### Building HNA from iFM'24
+
+eHL monitors are build using an older version of HNA.
+It was checked out together with the `hna` directory,
+but we need to configure it:
+
+```sh
+cd hna-ifm24
+cmake . -DCMAKE_BUILD_TYPE=Release -Dvamos_DIR=$(pwd)/../hna/vamos
+```
 
 ## Building monitors
 

@@ -27,9 +27,19 @@ Full experiments are ran with `make full`. These experiments take XXX.
 ## Setup
 
 We recommend using this artifact from Docker (Podman).
-In case you are using the exported image (built for x86), run:
+In case you are using the exported image (built for x86),
+first load the docker image
 
 ```sh
+docker load < rv25-shl.tar.gz
+```
+
+This is a one-time action and you do not need to repeat it in the future.
+
+Then, start a new container using this command:
+```
+
+docker run --rm -ti -v "$(pwd)/results":/opt/artifact/results rv25-shl
 ```
 
 For building the artifact, either using docker or from scratch, see `BUILDING.md`.
