@@ -57,7 +57,7 @@ def run_one(arg):
     if "mpt" in monitors:
         results.append(run_mpt(arg, traces_dir, files))
     if "rvhyper" in monitors:
-        results.append(run_rvhyper(arg, traces_dir, files))
+        results.append(run_rvhyper(arg, traces_dir, files, ['--quiet', '--sequential']))
     if "ehl" in monitors:
         results.append(run_hnl(arg, traces_dir, files, "ehl"))
     if "ehl-stred" in monitors:
