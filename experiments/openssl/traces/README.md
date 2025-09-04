@@ -28,6 +28,8 @@ CC=clang ./config enable-fuzz-libfuzzer \
 LDCMD=clang++ make -j4
 ```
 
+(see OpenSSL doc's for more details)
+
 ### Running fuzzing
 
 Run the fuzzing tests with `fuzz/client` (see OpenSSL's docs for details).
