@@ -41,22 +41,6 @@ pip3 install -r requirements
 cmake . -DCMAKE_BUILD_TYPE=Release
 ```
 
-### Building OpenSSL with fuzzing
-
-```
-CC=clang ./config enable-fuzz-libfuzzer \
-        -DPEDANTIC  no-shared \ 
-        --with-fuzzer-lib=/usr/lib/clang/19/lib/linux/libclang_rt.fuzzer-x86_64.a\
-        -DFUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION \
-        -fsanitize=fuzzer-no-link \
-        enable-ec_nistp_64_gcc_128 -fno-sanitize=alignment \
-        enable-weak-ssl-ciphers enable-rc5 enable-md2 \
-        enable-ssl3 enable-ssl3-method enable-nextprotoneg \
-        --debug
-
-LDCMD=clang++ make -j4
-```
-
 ## Building monitors
 
 ## eHL and sHL monitors
