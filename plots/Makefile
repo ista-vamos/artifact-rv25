@@ -8,7 +8,7 @@ prep:
 
 IFM_RESULTS_DIR=../experiments/ifm24/results
 plot-ifm: prep
-	./plot-ifm.py $(IFM_RESULTS_DIR)/out.csv && cp plot-1.pdf $(RESULTS_DIR)/ifm_plot.pdf
+	./plot-ifm.py $(IFM_RESULTS_DIR)/out.csv && cp plot.pdf $(RESULTS_DIR)/ifm_plot.pdf
 
 EHL_SHL_RESULTS_DIR=../experiments/ehl-shl/results
 plot-ehl-shl: prep

@@ -1,17 +1,20 @@
 #!/usr/bin/python3
 
 import sys
-import csv
 import matplotlib.pyplot as plt
-from matplotlib.backends.backend_pdf import PdfPages
-from statistics import mean
 import pandas as pd
 import seaborn as sns
-from os.path import basename, dirname, join
-
-plt.rcParams['text.usetex'] = True
+from os.path import dirname, join
+from shutil import which
 
 TIMEOUT = 120
+
+USE_LATEX = (which('latex') is not None)
+FIGSIZE=(6,2.5)
+
+######################################################################
+# get data
+######################################################################
 
 have_rvhyper=False
 have_mpt=False
@@ -53,185 +56,77 @@ if have_rvhyper:
 if have_mpt:
     data = pd.concat([data, data_mpt[["mon", "traces_num", "Length of traces", "cputime", "Bits", "mem"]]], ignore_index=True)
 
-data["Monitor"] = data["mon"].map(
-    {"rvhyper" : r"$\mathit{RVHyper}$",
-     "ehl" : r"$\mathit{eHL}$",
-     "ehl-stred" : r"$\mathit{eHL_{sr}}$",
-     "shl-le" : r"$\mathit{sHL}$",
-     "shl-eq" : r"$\mathit{sHL}$",
-     "shl-el-stred" : r"$\mathit{sHL_{sr}}$",
-     "shl-eq-stred" : r"$\mathit{sHL_{sr}}$",
-     "mpt": r"$\mathit{MPT}$"}
-)
-
-
-FIGSIZE=(6,2.5)
-ycol = "cputime"
 ######################################################################
-fig, ax = plt.subplots(1, 1, figsize=FIGSIZE)
-ax = [None, ax]
-trlen = 3000
-xcol = "traces_num"
-selected_data = data[(data["Length of traces"] == trlen)
-                     #& (data["Bits"].isin((2, 8, 10)))
-                    & (data["mon"].isin(["ehl", "shl-le", "mpt", 'rvhyper']))
-                    ]
-
-plot2 = sns.lineplot(data=selected_data,
-                     x=xcol, y=ycol,
-                     hue="Bits", style="Monitor",
-                     ax=ax[1], palette="bright",
-                     markers=True, dashes=True,
-                     errorbar=None
-                     )
-ax[1].set(xlabel='Number of traces', ylabel='CPU time [s]',
-          title=f'Traces length {trlen}')
-ax[1].legend(fontsize=7,
-             # loc='upper left', ncol=2, prop={'size':12}
-            )
-
-fig.tight_layout()
-fig.savefig(f"plot-2.pdf", bbox_inches='tight', dpi=600)
+# functions to generate the plot
 ######################################################################
-fig, ax = plt.subplots(1, 1, figsize=FIGSIZE)
-ax = [ax]
-xcol = "traces_num"
-bt = 8
-selected_data = data[(data["Length of traces"].isin((1000, 2000, 3000)))
-                     & (data["Bits"] == bt)]
-plot1 = sns.lineplot(data=selected_data,
-                     x=xcol, y=ycol,
-                     hue="Length of traces", style="Monitor",
-                     ax=ax[0], palette="bright",
-                     markers=True, dashes=True,
-                     errorbar=None
-                     )
-ax[0].set(xlabel='Number of traces', ylabel='CPU time [s]',
-          title=f'{bt}-bit alphabet')
 
-ax[0].legend(fontsize=7,# ncol=2
-             # loc='upper left', prop={'size':12}
-            )
+def gen_fig(data, xcol, ycol, bits):
+    if USE_LATEX:
+        plt.rcParams['text.usetex'] = True
 
+        data["Monitor"] = data["mon"].map(
+        {
+            "rvhyper"      : r"$\mathit{RVHyper}$",
+            "ehl"          : r"$\mathit{eHL}$",
+            "shl-le"       : r"$\mathit{sHL}$",
+            "shl-eq"       : r"$\mathit{sHL_{=}}$",
+            "mpt"          : r"$\mathit{MPT}$"
+        }
+        )
+    else:
+        print('WARNING: not using latex labels', file=sys.stderr)
+        plt.rcParams['text.usetex'] = False
 
-fig.tight_layout()
-fig.savefig(f"plot-1.pdf", bbox_inches='tight', dpi=600)
+        data["Monitor"] = data["mon"].map(
+            {
+             "rvhyper"     : "RVHyper",
+             "mpt"         : "MPT",
+             "ehl"         : "eHL",
+             "shl-le"      : "sHL<=",
+             "shl-eq"      : "sHL=",
+            }
+        )
 
-# -------------------------
-######################################################################
-fig, ax = plt.subplots(1, 1, figsize=FIGSIZE)
-ax = [None, None, ax]
-
-data_nost = data[data["mon"].isin(["ehl", "shl-le"])]
-data_nost = data_nost[["id", "Bits", "cputime", "Length of traces", "traces_num"]]
-
-data_st = data[data["mon"].isin(["ehl-stred", "shl-le-stred"])]
-data_st = data_st[["id", "Bits", "cputime", "Length of traces", "traces_num"]]
+    _gen_fig(data, xcol, ycol, bits)
 
 
-trlen = 1000
+def _gen_fig(data, xcol, ycol, bits):
+    fig, ax = plt.subplots(1, 1, figsize=FIGSIZE)
+    ax = [ax]
+    selected_data = data[(data["Length of traces"].isin((1000, 2000, 3000))) & (data["Bits"] == bits)]
+    plot1 = sns.lineplot(data=selected_data,
+                         x=xcol, y=ycol,
+                         hue="Length of traces", style="Monitor",
+                         ax=ax[0], palette="bright",
+                         markers=True, dashes=True,
+                         errorbar=None
+                         )
+    ax[0].set(xlabel='Number of traces', ylabel='CPU time [s]',
+              title=f'{bits}-bit alphabet')
 
-nost_d = data_nost.groupby("id").aggregate("mean")
-st_d = data_st.groupby("id").aggregate("mean")
-selected_data = st_d.join(nost_d, on="id", lsuffix="_st", rsuffix="_nost")
-#print(selected_data[selected_data["Bits_st"] == 1][["cputime_st", "cputime_nost"]])
-selected_data["cputime_st"] = selected_data["cputime_st"].fillna(value=TIMEOUT)
-selected_data["cputime_nost"] = selected_data["cputime_nost"].fillna(value=TIMEOUT)
-selected_data = selected_data[(selected_data["Length of traces_st"] == trlen)]
-#selected_data = selected_data[(selected_data["traces_num_st"] < 1000)]
-selected_data["Bits"] = selected_data["Bits_st"].astype(int)
-selected_data["traces_num"] = selected_data["traces_num_st"].astype(int)
-sns.scatterplot(data=selected_data,
-                x="cputime_st", y="cputime_nost",
-                style="Bits", hue="traces_num",
-                ax=ax[2], palette="bright",
-                #markers=True, dashes=True,
-                #errorbar=None
-                )
-xlim, ylim = ax[2].get_xlim(), ax[2].get_ylim()
-m1 = 0
-m2 = TIMEOUT
-xlim = ylim = (m1, m2)
-# ax[2].set_xlim(xlim)
-# ax[2].set_ylim(ylim)
+    ax[0].legend(fontsize=7)
 
-
-ax[2].plot(xlim, ylim, linestyle='--', color='k', lw=1, scalex=False, scaley=False)
-
-#ax[2].set(yscale="symlog")
-
-def rename(s):
-    if s == "Bits_st": return "Bits"
-    if s == "traces_num": return r"\# traces"
-    return s
-
-ax[2].set(xlabel='CPU time [s] (stutter red.)',
-          ylabel='CPU time [s] (no stutter red.)',
-          title=f"Traces length 1000")
-
-h,l = ax[2].get_legend_handles_labels()
-l = [rename(x) for x in l]
-split=5
-l1 = ax[2].legend(h[:split], l[:split], fontsize=7,
-               loc='upper center')#, ncol=2)
-l2 = ax[2].legend(h[split:],l[split:], loc='center right', fontsize=7)
-ax[2].add_artist(l1)
-
-fig.tight_layout()
-fig.savefig(f"plot-3.pdf", bbox_inches='tight', dpi=600)
+    fig.tight_layout()
+    fig.savefig(f"plot.pdf", bbox_inches='tight', dpi=600)
 
 
 ######################################################################
-fig, ax = plt.subplots(1, 1, figsize=FIGSIZE)
-ax = [None, None, ax]
+# generate the plot
+######################################################################
+
+BITS=8
+try:
+    gen_fig(data, "traces_num", "cputime", BITS)
+except RuntimeError as e:
+    sys.stderr.flush()
+    sys.stdout.flush()
+    if str(e).strip().startswith("latex"):
+        print('=================================================', file=sys.stderr)
+        print('WARNING: failed using latex, trying again without', file=sys.stderr)
+        USE_LATEX = False
+        gen_fig(data, "traces_num", "cputime", BITS)
 
 
-trlen = 1000
-
-nost_d = data_nost.groupby("id").aggregate("mean")
-st_d = data_st.groupby("id").aggregate("mean")
-selected_data = st_d.join(nost_d, on="id", lsuffix="_st", rsuffix="_nost")
-#print(selected_data[selected_data["Bits_st"] == 1][["cputime_st", "cputime_nost"]])
-selected_data["cputime_st"] = selected_data["cputime_st"].fillna(value=TIMEOUT)
-selected_data["cputime_nost"] = selected_data["cputime_nost"].fillna(value=TIMEOUT)
-selected_data = selected_data[(selected_data["Length of traces_st"] == trlen)]
-#selected_data = selected_data[(selected_data["traces_num_st"] < 1000)]
-selected_data["Bits"] = selected_data["Bits_st"].astype(int)
-selected_data["traces_num"] = selected_data["traces_num_st"].astype(int)
-#selected_data = selected_data[(selected_data["Bits"] == 8)]
-sns.scatterplot(data=selected_data,
-                x="cputime_st", y="cputime_nost",
-                style="Bits", hue="traces_num",
-                ax=ax[2], palette="bright",
-                #markers=True, dashes=True,
-                #errorbar=None
-                )
-xlim, ylim = ax[2].get_xlim(), ax[2].get_ylim()
-m1 = 0
-m2 = TIMEOUT
-xlim = ylim = (m1, m2)
-# ax[2].set_xlim(xlim)
-# ax[2].set_ylim(ylim)
-# 
-
-
-#ax[2].set(yscale="symlog")
-ax[2].plot(xlim, ylim, linestyle='--', color='k', lw=1, scalex=False, scaley=False)
-
-ax[2].set(xlabel='CPU time [s] (stutter red.)',
-          ylabel='CPU time [s] (no stutter red.)',
-          title=f"Traces length 1000")
-
-h,l = ax[2].get_legend_handles_labels()
-l = [rename(x) for x in l]
-split=6
-l1 = ax[2].legend(h[:split], l[:split], fontsize=7,
-               loc='upper left')#, ncol=2)
-l2 = ax[2].legend(h[split:],l[split:], loc='center right', fontsize=7)
-ax[2].add_artist(l1)
-
-fig.tight_layout()
-fig.savefig(f"plot-4.pdf", bbox_inches='tight', dpi=600)
 
 exit(0)
 

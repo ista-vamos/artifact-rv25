@@ -167,3 +167,27 @@ def parse_cmd():
 if __name__ == "__main__":
     args = parse_cmd()
     run(args)
+
+
+def shl_monitors(args):
+    for m in args.monitors:
+        if m.startswith("shl"):
+            yield m
+
+if __name__ == "__main__":
+    args = parse_cmd()
+
+    problem=False
+    for mon in shl_monitors(args):
+        mon = join(f"{hnl_dir}/{mon}", "monitor")
+        if not (isfile(mon) and access(mon, X_OK)):
+            print(f"Did not find sHL monitor ({mon}). Please run `'./generate-shl.sh` "
+                   "first (you may need to modify the script to generate the right monitor).",
+                  file=stderr)
+            problem=True
+
+    if problem:
+        exit(1)
+
+    # do it!
+    run(args)

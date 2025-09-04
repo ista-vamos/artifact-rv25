@@ -16,9 +16,9 @@ shl-le/monitor:
 	./generate-shl.sh
 
 
-short: shl-le/monitor ehl-10b/monitor 
+short: shl-le/monitor ehl-4b/monitor ehl-10b/monitor 
 	mkdir -p results
-	python3 ./run.py --out results/out.csv --bits=10 --traces-nums=1000,2000,4000 --trials=3 --traces-lens=1000
+	python3 ./run.py --out results/out.csv --bits=4,10 --traces-nums=1000,2000,4000 --trials=3 --traces-lens=1000
 
 
 full: shl-le/monitor ehl-4b/monitor ehl-8b/monitor ehl-10b/monitor ehl-12b/monitor
