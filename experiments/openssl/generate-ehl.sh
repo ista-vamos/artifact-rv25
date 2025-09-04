@@ -13,18 +13,11 @@ CSV_HEADER='in: uint64_t, out: uint64_t'
 
 if [ ! -z "$1" ]; then
   ALPHABET=$1
-  python3 -OO $HNA/hnl.py "$FORMULA" \
-    --out-dir ehl-$ALPHABET --csv-header="$CSV_HEADER" \
-    --alphabet=$ALPHABET -DMEASURE_CPUTIME=OFF -DCACHE_ATOMS_RESULTS=OFF --reduction reflexive,symmetric
-  python3 -OO $HNA/hnl.py "$FORMULA_STRED" \
-    --out-dir ehl-stred-$ALPHABET --csv-header="$CSV_HEADER" \
-    --alphabet=$ALPHABET -DMEASURE_CPUTIME=OFF -DCACHE_ATOMS_RESULTS=OFF --reduction reflexive,symmetric
-  exit 0
+else
+  ALPHABET=8b
 fi
 
-for ALPHABET in 1b 2b 4b 8b; do
-  python3 -OO $HNA/hnl.py "$FORMULA" \
-    --out-dir ehl-$ALPHABET --csv-header="$CSV_HEADER" \
-    --alphabet=$ALPHABET -DMEASURE_CPUTIME=OFF -DCACHE_ATOMS_RESULTS=OFF --reduction reflexive,symmetric
-done
+python3 -OO $HNA/hnl.py "$FORMULA" \
+  --out-dir ehl-$ALPHABET --csv-header="$CSV_HEADER" \
+  --alphabet=$ALPHABET -DMEASURE_CPUTIME=OFF -DCACHE_ATOMS_RESULTS=OFF --reduction reflexive,symmetric
 

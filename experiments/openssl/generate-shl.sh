@@ -13,6 +13,6 @@ CSV_HEADER='in: uint64_t, out: uint64_t'
 
 python3 -OO $HNA/hnl.py "$FORMULA_EQ" \
   --out-dir shl-eq --data="$CSV_HEADER" \
-  --alphabet=$ALPHABET --overwrite-file $DIR/files/read_csv_event.h -DMEASURE_CPUTIME=OFF -DCACHE_ATOMS_RESULTS=OFF --logic shl\
+  --alphabet=$ALPHABET -DMEASURE_CPUTIME=OFF -DCACHE_ATOMS_RESULTS=OFF --logic shl\
   --reduction reflexive,symmetric
 
