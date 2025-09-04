@@ -53,13 +53,12 @@ cmake . -DCMAKE_BUILD_TYPE=Release
 For generating plots, you need also:
 ```
 pip install matplotlib pandas seaborn
-apt-get install texlive-latex-base
+apt-get install texlive-latex-base texlive-latex-extra
 ```
 
 NOTE: installing latex downloads a lot of data. You may skip this step
-if you change the scripts in `plots/` directory not to use LaTeX labels.
+and the plotting scripts will automatically avoid using Latex.
 
-TODO: do this automatic (don't use latex if not present)
 
 ## Building monitors
 
