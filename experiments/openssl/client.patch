@@ -1,0 +1,97 @@
+diff --git a/fuzz/client.c b/fuzz/client.c
+index 1754add..2568a2f 100644
+--- a/fuzz/client.c
++++ b/fuzz/client.c
+@@ -53,8 +58,9 @@ int FuzzerInitialize(int *argc, char ***argv)
+   return 1;
+ }
+ 
+-int FuzzerTestOneInput(const uint8_t *buf, size_t len)
+-{
++static size_t out_num = 1;
++
++int _FuzzerTestOneInput(const uint8_t *buf, size_t len) {
+   SSL *client = NULL;
+   BIO *in;
+   BIO *out;
+@@ -84,17 +90,62 @@ int FuzzerTestOneInput(const uint8_t *buf, size_t len)
+   }
+   SSL_set_bio(client, in, out);
+   SSL_set_connect_state(client);
++
++  char name[1024];
++  snprintf(name, sizeof(name), "test-%lu-in.txt", out_num);
++  FILE *fin = fopen(name, "w");
++  if (!fin) {
++    fprintf(stderr, "Failed openning output: %s\n", name);
++    abort();
++  }
++
++  snprintf(name, sizeof(name), "test-%lu-out.txt", out_num);
++  FILE *fout = fopen(name, "w");
++  if (!fout) {
++    fprintf(stderr, "Failed openning output: %s\n", name);
++    abort();
++  }
++  ++out_num;
++
++  for (int i = 0; i < len; ++i) {
++    fprintf(fin, "%d\n", buf[i]);
++  }
++
++  fclose(fin);
++
+   OPENSSL_assert((size_t)BIO_write(in, buf, len) == len);
+   if (SSL_do_handshake(client) == 1) {
++
++    fprintf(fout, "ok\n");
++
+     /* Keep reading application data until error or EOF. */
+     uint8_t tmp[1024];
+     for (;;) {
+-            if (SSL_read(client, tmp, sizeof(tmp)) <= 0) {
++      int r = SSL_read(client, tmp, sizeof(tmp));
++      if (r <= 0) {
+         break;
++      } else {
++        for (int i = 0; i < r; ++i) {
++          fprintf(fout, "%d\n", tmp[i]);
++        }
+       }
+     }
++  } else {
++    fprintf(fout, "err\n");
++
++    int r;
++    const char *file, *func, *data;
++    int ln, flags;
++    while ((r = ERR_get_error_all(&file, &ln, &func, &data, &flags)) > 0) {
++      fprintf(fout, "%d\n", r);
++      fprintf(fout, "%s:%d:%s: %s; flags=%d\n", file, ln, func, data, flags);
++    }
+   }
+- end:
++
++  fclose(fout);
++
++end:
++
+   SSL_free(client);
+   ERR_clear_error();
+   SSL_CTX_free(ctx);
+@@ -102,7 +153,12 @@ int FuzzerTestOneInput(const uint8_t *buf, size_t len)
+   return 0;
+ }
+ 
+-void FuzzerCleanup(void)
+-{
+-    FuzzerClearRand();
++int FuzzerTestOneInput(const uint8_t *buf, size_t len) {
++  // repeat each input 10 times
++  for (int i = 0; i < 10; ++i) {
++    _FuzzerTestOneInput(buf, len);
++  }
++  return 0;
+ }
++
++void FuzzerCleanup(void) { FuzzerClearRand(); }
