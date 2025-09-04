@@ -15,7 +15,7 @@ data = pd.read_csv(sys.argv[1], sep=" ")
 data.columns = ["mon", "traces_dir", "traces_num", "bytes", "verdict", "cputime", "walltime", "mem", "returncode"]
 data.replace({"None": None}, inplace=True)
 
-D = data[["traces_num", "bytes", "atoms", "cputime", "mem"]]
+D = data[["traces_num", "bytes", "cputime", "mem"]]
 print(D.groupby(["bytes", "traces_num"]).mean())
 
 exit(0)
