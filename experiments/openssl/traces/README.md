@@ -8,9 +8,13 @@ There are these directories:
 
 ## Generating traces
 
-### Building OpenSSL with fuzzing
+### Building OpenSSL
 
-```
+First, clone OpenSSL sources. For our experiments, we used the commit `a0d1af6574ae6a0e3`.
+Then, apply the patch `client.patch` that makes the `fuzz/client` binary
+print events into files.  Then, build OpenSSL with fuzzing:
+
+```sh
 CC=clang ./config enable-fuzz-libfuzzer \
         -DPEDANTIC  no-shared \ 
         --with-fuzzer-lib=/usr/lib/clang/19/lib/linux/libclang_rt.fuzzer-x86_64.a\
@@ -24,15 +28,22 @@ CC=clang ./config enable-fuzz-libfuzzer \
 LDCMD=clang++ make -j4
 ```
 
+### Running fuzzing
 
-### Pre-processing the traces
+Run the fuzzing tests with `fuzz/client` (see OpenSSL's docs for details).
+This step will generate a bunch of raw traces in files `test-<NUM>-in.txt`
+and `test-<NUM>-out.txt`.
+These raw traces need to be put into the format that monitors can read.
+This was done by these commands:
 
-The traces need to be put into the format that monitors can read.
-This was done by the following command:
+```sh
+# traces were generated into the directory `data`
+RAW_TRACES_DIR=data
+BITS=64
+mkdir traces-${BITS}
 
+for I in `seq 1 $(ls $RAW_TRACES_DIR/*-in.txt | wc -l)`; do
+  ./gentr.py ${BITS} $RAW_TRACES_DIR/test-$I-in.txt $RAW_TRACES_DIR/test-$I-out.txt > traces-${BITS}b/test-$I.tr;
+done
 ```
-for I in `seq 1 24040`; do ./gentr.py 1 data/test-$I-in.txt data/test-$I-out.txt > test-$I.tr; done
-```
-
-
 
