@@ -11,11 +11,11 @@ TBD
 ## Structure of the artifact
 
 ```
+- experiments   # Experiments with observational determinism
 - hna           # sHL monitors
 - hna-ifm24     # eHL monitors
 - mpt           # MPT monitors
 - rvhyper       # RVHyper
-- experiments   # Experiments with observational determinism
 ```
 
 ### eHL and sHL monitors
