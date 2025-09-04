@@ -1,6 +1,6 @@
 RESULTS_DIR=../results
 
-all: plot-ehl-shl plot-ifm plot-openssl
+all: plot-ehl-shl plot-ifm tab
 
 prep:
 	mkdir -p $(RESULTS_DIR)
@@ -23,7 +23,3 @@ OPENSSL_RESULTS_DIR=../experiments/openssl/results
 tab:
 	./tab.py $(OPENSSL_RESULTS_DIR)/out.csv | tee ../results/openssl_tab.txt
 
-
-# original:
-# 	cd plots && ./plot.py ../csv_from_paper/fig4ab.csv ../results/fig4c.csv && cp plot.pdf ../results/fig4.pdf
-# 	cd plots && ./tab.py ../csv_from_paper/tab1.csv | tee ../results/tab1.txt
