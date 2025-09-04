@@ -5,6 +5,18 @@
 
 ## Building without docker
 
+### Structure of the artifact
+
+```
+- hna        sHL monitors
+- hna-ifm24  eHL monitors
+- mpt        MPT monitors
+- rvhyper    RVHyper
+- experiments   # Experiments with observational determinism
+```
+
+### Building without docker
+
 The best would be to follow the steps from `Dockerfile`.
 Here are the main steps that you need to do.
 
@@ -34,29 +46,43 @@ cd hna
 # install dependencies
 pip3 install -r requirements
 
-# build VAMOS -- necessary to setup vamos-common subproject in VAMOS
-./build-vamos.sh
-
 # configure the hna project
 cmake . -DCMAKE_BUILD_TYPE=Release
 ```
+
+For generating plots, you need also:
+```
+pip install matplotlib pandas seaborn
+apt-get install texlive-latex-base
+```
+
+NOTE: installing latex downloads a lot of data. You may skip this step
+if you change the scripts in `plots/` directory not to use LaTeX labels.
+
+TODO: do this automatic (don't use latex if not present)
 
 ## Building monitors
 
 ## eHL and sHL monitors
 
 These monitors are built automatically by scripts.
+If you want to build them manually, check the README.md in each
+particular experiments.
 
-### sHL monitors
+### Source code for generating sHL monitors
 
-TBD
+The directory `hna` contains the code for generating sHL monitors.
+Check the README in that directory for usage.
+For doing new experiments, check the paragraph about RVHyper below.
 
-### eHL monitors
+### Source code for generating eHL monitors
 
 The directory `hna-ifm24` contains code of the `hna` project that was used to run experiments for the paper "Monitoring Extended Hypernode Logic" presented at iFM'24.
 We made the following changes to the code:
 
 - The generated code is not formatted with `clang-format`. Formatting the generated code may take a lot of time and it would introduce bias into measurements of the time of code generation.
+
+For doing new experiments, check the paragraph about RVHyper below.
 
 ## MPTs monitors
 
@@ -104,12 +130,6 @@ apt-get install -y --no-install-recommends clang
 make -j2
 ```
 
-## Structure of the artifact
+## RVHyper
 
-```
-- hna        sHL monitors
-- hna-ifm24  eHL monitors
-- mpt        MPT monitors
-- rvhyper    RVHyper
-- od   # Experiments with observational determinism
-```
+TBD

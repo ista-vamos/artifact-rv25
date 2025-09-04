@@ -1,59 +1,34 @@
-# all: fig4 tab1
-#
-# short: fig4-short tab1-short
-#
-#
-# fig4-short:
-# 	python3 ./run-fig4.py --out results/fig4ab.csv --bits=2,8 --traces-nums=500,2000,5000 --trials=3 --traces-lens=1000,4000
-# 	python3 ./run-fig4.py --out results/fig4c.csv  --bits=1,2 --traces-lens=1000 --traces-nums=400,600 --trials=3 --monitors=hnl,hnl-stred --traces-no-stuttering
-# 	$(MAKE) fig4-plot
-#
-#
-# fig4:
-# 	python3 ./run-fig4.py --out results/fig4ab.csv
-# 	python3 ./run-fig4.py --out results/fig4c.csv --bits=1,2,4 --traces-lens=1000 --traces-nums=200,400,600,800 --monitors=hnl,hnl-stred
-# 	$(MAKE) fig4-plot
-#
-#
-# tab1:
-# 	python3 ./run-tab1.py --out results/tab1.csv
-# 	$(MAKE) tab1-show
-#
-# tab1-short:
-# 	python3 ./run-tab1.py --out results/tab1.csv --trials=3
-# 	$(MAKE) tab1-show
-#
-#
 RESULTS_DIR=../results
+
+all: plot-ehl-shl plot-ifm plot-openssl
+
 prep:
 	mkdir -p $(RESULTS_DIR)
 
-IFM_RESULTS_DIR=../od/ifm24/results
+
+IFM_RESULTS_DIR=../experiments/ifm24/results
 plot-ifm: prep
 	./plot-ifm.py $(IFM_RESULTS_DIR)/out.csv && cp plot-1.pdf $(RESULTS_DIR)/ifm_plot.pdf
 
-FINDATA_RESULTS_DIR=../od/findata/results
-plot-findata: prep
-	./plot-findata.py $(FINDATA_RESULTS_DIR)/out.csv  && cp plot.pdf $(RESULTS_DIR)/findata_plot.pdf
+EHL_SHL_RESULTS_DIR=../experiments/ehl-shl/results
+plot-ehl-shl: prep
+	./plot-ehl-shl.py $(EHL_SHL_RESULTS_DIR)/out.csv  && cp plot.pdf $(RESULTS_DIR)/ehl-shl_plot.pdf
 
 plot-join: prep
 	./plot-join.py $(IFM_RESULTS_DIR)/out.csv $(FINDATA_RESULTS_DIR)/out.csv  && cp plot.pdf $(RESULTS_DIR)/plot.pdf
 
 
 
-OPENSSL_RESULTS_DIR=../od/openssl/results
+OPENSSL_RESULTS_DIR=../experiments/openssl/results
 plot-openssl: prep
 	./plot-openssl.py $(OPENSSL_RESULTS_DIR)/out.csv  && cp plot.pdf $(RESULTS_DIR)/openssl_plot.pdf
 
 
 
+#tab1:
+#	./tab.py ../results/tab1.csv  | tee ../results/tab1.txt
 
-#
-#
-# tab1-show:
-# 	cd plots && ./tab.py ../results/tab1.csv  | tee ../results/tab1.txt
-#
-#
+
 # original:
 # 	cd plots && ./plot.py ../csv_from_paper/fig4ab.csv ../results/fig4c.csv && cp plot.pdf ../results/fig4.pdf
 # 	cd plots && ./tab.py ../csv_from_paper/tab1.csv | tee ../results/tab1.txt
