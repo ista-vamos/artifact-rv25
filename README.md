@@ -12,26 +12,27 @@ in particular:
 The artifact does not have scripts to automatically reproduce the experiments presented
 in Fig. 8. that measure the time of generating monitors.
 You can, however, reproduce them manually -- the artifact contains code for generating the monitors
-and you can run it and measure the time (how to do this is described later).
+and you can run it and measure the time (how to generate monitors is described later).
 There is also the script we used to generate Fig. 8 (`plots/gentime.py`).
 
-When the artifact is set-up (see below), go into the top-level directory and run one of
+To run experiments and generate plots, setup the artifact (see below),
+go into the top-level directory and run one of:
+
  - `make short`
  - `make full`
 
-To run experiments and generate plots.
 The command `make short` runs a short version of the experiments and it takes a few minutes.
 Full experiments are ran with `make full`. These experiments take XXX.
 
-## Building
+## Setup
 
-We recommend build the artifact using Docker (Podman).
-In case you want to build the artifact from scratch, see `BUILDING.md`.
+We recommend using this artifact from Docker (Podman).
+In case you are using the exported image (built for x86), run:
 
+```sh
+```
 
-## Setting up the Docker image
-
-TBD
+For building the artifact, either using docker or from scratch, see `BUILDING.md`.
 
 
 ## Structure of the artifact
