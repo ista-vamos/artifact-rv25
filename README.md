@@ -57,6 +57,11 @@ run this command:
 apt-get install texlive-latex-base texlive-latex-extra cm-super
 ```
 
+Plots are generated automatically by `make short` and `make full` commands.
+If you want to re-generate them manually, run `make -C plots`.
+They are stored into the `results` directory inside the directory from where
+you started docker image (or in the `artifact-rv25` if you are not using docker).
+
 For more information about the experiments, see README.md files inside directories.
 For building the artifact, either using docker or from scratch, see `BUILDING.md`.
 
@@ -68,6 +73,7 @@ For building the artifact, either using docker or from scratch, see `BUILDING.md
 - hna           # code for generating sHL monitors
 - hna-ifm24     # code for generating eHL monitors
 - mpt           # code of the MPT monitors
+- plots         # scripts for generating plots
 - rvhyper       # RVHyper (HyperLTL monitors)
 ```
 

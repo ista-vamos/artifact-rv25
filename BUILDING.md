@@ -1,9 +1,20 @@
 # Building the artifact
 
+If you have not done so yet, clone the repository.
+
+```sh
+git clone https://github.com/ista-vamos/artifact-rv25
+cd artifact-rv25
+```
+
+Unless stated otherwise, we assume that all commands described
+subsequently are executed from the `artifact-rv25` directory.
+
+
 ## Building docker image
 
-Go into the top-level directory of the artifact
-(the one containing `Dockerfile`), and run:
+The top-level directory of the artifact contains `Dockerfile`,
+so simply run:
 
 ```sh
 build . -t rv25-shl
@@ -13,21 +24,21 @@ build . -t rv25-shl
 ## Building without docker
 
 The best is to follow the steps from `Dockerfile`.
-The guide below serves explains and elaborates on
-of those steps.
+The guide below explains and elaborates on of those steps.
+
 
 ### Python virtual environment
 
-First, outside docker, you may need to setup python virtual environment:
+First, if outside docker, you may need to setup python virtual environment:
 
-```shell
+```sh
 python3 -m venv venv/
 ```
 
 Then, in every terminal where you will be working with this artifact,
 run this command:
 
-```shell
+```sh
 source venv/bin/activate
 ```
 
@@ -50,25 +61,6 @@ pip3 install -r requirements
 cmake . -DCMAKE_BUILD_TYPE=Release
 ```
 
-For generating plots, you also need:
-
-```sh
-pip install matplotlib pandas seaborn
-```
-
-Optionally, you may also install latex if you don't have.
-Labels in plots will then be typeset using Latex:
-
-```sh
-apt-get install texlive-latex-base texlive-latex-extra cm-super
-```
-
-NOTE: installing Latex downloads a lot of data. You may skip this step
-and the plotting scripts will automatically avoid using Latex.
-In the exported docker image, we do not use latex to keep the
-image smaller. You can always run the command above when
-creating a new docker container. (The command is also
-in the Dockerfile, commented out).
 
 ### Building HNA from iFM'24
 
@@ -116,4 +108,27 @@ apt-get install -y --no-install-recommends clang
 
 make -j2
 ```
+
+## Plots
+
+For generating plots, you will need:
+
+```sh
+pip install matplotlib pandas seaborn
+```
+
+(You can use the system packages instead of using pip).
+Optionally, you may also install latex if you do not already have it.
+Labels in plots will then be typeset using Latex:
+
+```sh
+apt-get install texlive-latex-base texlive-latex-extra cm-super
+```
+
+NOTE: installing Latex downloads a lot of data. You may skip this step
+and the plotting scripts will automatically avoid using Latex.
+In the exported docker image, we do not use latex to keep the
+image smaller. You can always run the command above when
+creating a new docker container. (The command is also
+in the Dockerfile, commented out).
 
