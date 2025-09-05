@@ -82,13 +82,16 @@ For building the artifact, either using docker or from scratch, see `BUILDING.md
 The code for generating eHL and sHL monitors is a part of the
 [RVHyno](https://github.com/ista-vamos/rvhyno) project, previously called HNA.
 The code is in two directories:
+
  - `hna`        for sHL monitors
  - `hna-ifm24`  for eHL monitors
 
 Directory `hna-ifm24` contains the project in the version used in the artifact
 for the paper _Monitoring Extended Hypernode Logic_ that was accepted at iFM'24:
+
  - [artifact](https://doi.org/10.5281/zenodo.13294507)
  - [paper](https://doi.org/10.1007/978-3-031-76554-4_9)
+
 We made the following changes to the code:
 
 - The generated code is not formatted with `clang-format`. Formatting the generated
@@ -102,8 +105,7 @@ See README inside those directories for further usage.
 
 ### RVHyno
 
-The current version of the project is available at
-<https://github.com/ista-vamos/rvhyno>
+The current version of the project is available at <https://github.com/ista-vamos/rvhyno>
 
 it contains many improvements, so if you want to experiment with hypernode logic monitors,
 we suggest you try the current version.
