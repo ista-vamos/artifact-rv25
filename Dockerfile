@@ -22,9 +22,10 @@ RUN apt-get install -y --no-install-recommends\
 
 ## Uncomment this for latex labels in plots
 # WARNING: downloads cca 350 of archives
-RUN apt-get install -y --no-install-recommends\
-	texlive-latex-base\
-	texlive-latex-extra
+# RUN apt-get install -y --no-install-recommends\
+#	texlive-latex-base\
+#	texlive-latex-extra\
+#	cm-super
 
 COPY . /opt/artifact
 WORKDIR /opt/artifact/

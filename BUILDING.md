@@ -60,11 +60,15 @@ Optionally, you may also install latex if you don't have.
 Labels in plots will then be typeset using Latex:
 
 ```sh
-apt-get install texlive-latex-base texlive-latex-extra
+apt-get install texlive-latex-base texlive-latex-extra cm-super
 ```
 
 NOTE: installing Latex downloads a lot of data. You may skip this step
 and the plotting scripts will automatically avoid using Latex.
+In the exported docker image, we do not use latex to keep the
+image smaller. You can always run the command above when
+creating a new docker container. (The command is also
+in the Dockerfile, commented out).
 
 ### Building HNA from iFM'24
 

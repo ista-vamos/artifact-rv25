@@ -21,8 +21,10 @@ go into the top-level directory and run one of:
  - `make short`
  - `make full`
 
-The command `make short` runs a short version of the experiments and it takes a few minutes.
-Full experiments are ran with `make full`. These experiments take XXX.
+The command `make short` runs a short version of the experiments and it takes cca 5 minutes on a
+recent hardware (as of 2025).
+Full experiments are ran with `make full`. These experiments take tens of minutes to a small number
+of hours, depending on the hardware.
 
 ## Setup
 
@@ -44,7 +46,16 @@ docker run --rm -ti -v "$(pwd)/results":/opt/artifact/results rv25-shl
 
 When you are inside the container, you can run `make short` or `make full`.
 The results will be exported into the directory `results` in the directory
-from where you started the docker.
+from where you started docker.
+
+NOTE: to keep the exported image smaller, we do not include latex packages
+that may be used to typeset labels in the plots in the same way as they are
+in the paper. If you want to use latex labels, after running the docker container,
+run this command:
+
+```sh
+apt-get install texlive-latex-base texlive-latex-extra cm-super
+```
 
 For more information about the experiments, see README.md files inside directories.
 For building the artifact, either using docker or from scratch, see `BUILDING.md`.
@@ -69,7 +80,9 @@ The code is in two directories:
  - `hna-ifm24`  for eHL monitors
 
 Directory `hna-ifm24` contains the project in the version used in the artifact
-for the paper _Monitoring Extended Hypernode Logic_ that was accepted at iFM'24.
+for the paper _Monitoring Extended Hypernode Logic_ that was accepted at iFM'24:
+ - [artifact](https://doi.org/10.5281/zenodo.13294507)
+ - [paper](https://doi.org/10.1007/978-3-031-76554-4_9)
 We made the following changes to the code:
 
 - The generated code is not formatted with `clang-format`. Formatting the generated
@@ -93,7 +106,8 @@ You can get it simply by cloning and configuring the repository:
 ```sh
 git clone https://github.com/ista-vamos/rvhyno
 cd rvhyno
-cmake .
+
+# now follow the README
 ```
 
 ### MPT monitors
